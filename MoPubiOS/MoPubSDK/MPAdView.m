@@ -15,36 +15,6 @@
 #import <stdlib.h>
 #import <time.h>
 
-static NSString * const kTimerNotificationName		= @"Autorefresh";
-static NSString * const kAdAnimationId				= @"MPAdTransition";
-static NSString * const kErrorDomain				= @"mopub.com";
-static NSString * const kMoPubUrlScheme				= @"mopub";
-static NSString * const kMoPubCloseHost				= @"close";
-static NSString * const kMoPubFinishLoadHost		= @"finishLoad";
-static NSString * const kMoPubFailLoadHost			= @"failLoad";
-static NSString * const kMoPubInAppHost				= @"inapp";
-static NSString * const kMoPubCustomHost			= @"custom";
-static NSString * const kMoPubInterfaceOrientationPortraitId	= @"p";
-static NSString * const kMoPubInterfaceOrientationLandscapeId	= @"l";
-static const CGFloat kMoPubRequestTimeoutInterval	= 10.0;
-static const CGFloat kMoPubRequestRetryInterval     = 60.0;
-
-// Ad header key/value constants.
-static NSString * const kClickthroughHeaderKey		= @"X-Clickthrough";
-static NSString * const kLaunchpageHeaderKey		= @"X-Launchpage";
-static NSString * const kFailUrlHeaderKey			= @"X-Failurl";
-static NSString * const kImpressionTrackerHeaderKey	= @"X-Imptracker";
-static NSString * const kInterceptLinksHeaderKey	= @"X-Interceptlinks";
-static NSString * const kScrollableHeaderKey		= @"X-Scrollable";
-static NSString * const kWidthHeaderKey				= @"X-Width";
-static NSString * const kHeightHeaderKey			= @"X-Height";
-static NSString * const kRefreshTimeHeaderKey		= @"X-Refreshtime";
-static NSString * const kAnimationHeaderKey			= @"X-Animation";
-static NSString * const kAdTypeHeaderKey			= @"X-Adtype";
-static NSString * const kNetworkTypeHeaderKey		= @"X-Networktype";
-static NSString * const kAdTypeHtml					= @"html";
-static NSString * const kAdTypeClear				= @"clear";
-
 @interface MPAdView (Internal)
 - (void)registerForApplicationStateTransitionNotifications;
 - (void)destroyWebviewPool;
@@ -53,7 +23,6 @@ static NSString * const kAdTypeClear				= @"clear";
 - (void)animateTransitionToAdView:(UIView *)view;
 - (UIWebView *)makeAdWebViewWithFrame:(CGRect)frame;
 - (void)adLinkClicked:(NSURL *)URL;
-- (void)backFillWithNothing;
 - (void)trackClick;
 - (void)trackImpression;
 - (NSDictionary *)dictionaryFromQueryString:(NSString *)query;
@@ -76,8 +45,6 @@ static NSString * const kAdTypeClear				= @"clear";
 @property (nonatomic, copy) NSURL *interceptURL;
 @property (nonatomic, copy) NSURL *failURL;
 @property (nonatomic, copy) NSURL *impTrackerURL;
-@property (nonatomic, assign) BOOL shouldInterceptLinks;
-@property (nonatomic, assign) BOOL scrollable;
 @property (nonatomic, retain) MPTimer *autorefreshTimer;
 @property (nonatomic, assign) BOOL isLoading;
 @end
@@ -100,6 +67,8 @@ static NSString * const kAdTypeClear				= @"clear";
 @synthesize ignoresAutorefresh = _ignoresAutorefresh;
 @synthesize stretchesWebContentToFill = _stretchesWebContentToFill;
 @synthesize isLoading = _isLoading;
+@synthesize animationType = _animationType;
+@synthesize originalSize = _originalSize;
 
 #pragma mark -
 #pragma mark Lifecycle
@@ -358,6 +327,7 @@ static NSString * const kAdTypeClear				= @"clear";
 
 - (void)loadAdWithURL:(NSURL *)URL
 {
+
 	if (_isLoading) 
 	{
 		MPLogWarn(@"Ad view (%p) already loading an ad. Wait for previous load to finish.", self);
@@ -440,29 +410,10 @@ static NSString * const kAdTypeClear				= @"clear";
 	// Set the user agent so that we know where the request is coming from (for targeting).
 	if ([request respondsToSelector:@selector(setValue:forHTTPHeaderField:)]) 
 	{
-		NSString *userAgentString = [self userAgentString];
-		[request setValue:userAgentString forHTTPHeaderField:@"User-Agent"];
+		[request setValue:userAgentString() forHTTPHeaderField:@"User-Agent"];
 	}			
 	
 	return request;
-}
-
-- (NSString *)userAgentString
-{
-	NSString *systemVersion = [[UIDevice currentDevice] systemVersion];
-	NSString *systemName = [[UIDevice currentDevice] systemName];
-	NSString *model = [[UIDevice currentDevice] model];
-	NSString *bundleName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
-	NSString *appVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];			
-	return [NSString stringWithFormat:
-			@"%@/%@ (%@; U; CPU %@ %@ like Mac OS X; %@)",
-			bundleName, 
-			appVersion, 
-			model,
-			systemName, 
-			systemVersion, 
-			[[NSLocale currentLocale] localeIdentifier]
-			];
 }
 
 - (void)didCloseAd:(id)sender
@@ -615,7 +566,7 @@ static NSString * const kAdTypeClear				= @"clear";
 	Class cls = NSClassFromString(classString);
 	if (cls != nil)
 	{
-		MPBaseAdapter *newAdapter = (MPBaseAdapter *)[[cls alloc] initWithAdView:self];
+		MPBaseAdapter *newAdapter = (MPBaseAdapter *)[[cls alloc] initWithAdManager:self];
 		[self replaceCurrentAdapterWithAdapter:newAdapter];
 		
 		[connection cancel];

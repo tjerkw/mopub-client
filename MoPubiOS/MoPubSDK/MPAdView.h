@@ -28,6 +28,36 @@ typedef enum
 	MPAdAnimationTypeCount
 } MPAdAnimationType;
 
+static NSString * const kTimerNotificationName		= @"Autorefresh";
+static NSString * const kAdAnimationId				= @"MPAdTransition";
+static NSString * const kErrorDomain				= @"mopub.com";
+static NSString * const kMoPubUrlScheme				= @"mopub";
+static NSString * const kMoPubCloseHost				= @"close";
+static NSString * const kMoPubFinishLoadHost		= @"finishLoad";
+static NSString * const kMoPubFailLoadHost			= @"failLoad";
+static NSString * const kMoPubInAppHost				= @"inapp";
+static NSString * const kMoPubCustomHost			= @"custom";
+static NSString * const kMoPubInterfaceOrientationPortraitId	= @"p";
+static NSString * const kMoPubInterfaceOrientationLandscapeId	= @"l";
+static const CGFloat kMoPubRequestTimeoutInterval	= 10.0;
+static const CGFloat kMoPubRequestRetryInterval     = 60.0;
+
+// Ad header key/value constants.
+static NSString * const kClickthroughHeaderKey		= @"X-Clickthrough";
+static NSString * const kLaunchpageHeaderKey		= @"X-Launchpage";
+static NSString * const kFailUrlHeaderKey			= @"X-Failurl";
+static NSString * const kImpressionTrackerHeaderKey	= @"X-Imptracker";
+static NSString * const kInterceptLinksHeaderKey	= @"X-Interceptlinks";
+static NSString * const kScrollableHeaderKey		= @"X-Scrollable";
+static NSString * const kWidthHeaderKey				= @"X-Width";
+static NSString * const kHeightHeaderKey			= @"X-Height";
+static NSString * const kRefreshTimeHeaderKey		= @"X-Refreshtime";
+static NSString * const kAnimationHeaderKey			= @"X-Animation";
+static NSString * const kAdTypeHeaderKey			= @"X-Adtype";
+static NSString * const kNetworkTypeHeaderKey		= @"X-Networktype";
+static NSString * const kAdTypeHtml					= @"html";
+static NSString * const kAdTypeClear				= @"clear";
+
 @protocol MPAdViewDelegate;
 @class MPTimer;
 @class MPTimerTarget;
@@ -154,6 +184,10 @@ typedef enum
 @property (nonatomic, assign) BOOL ignoresAutorefresh;
 @property (nonatomic, assign) BOOL stretchesWebContentToFill;
 @property (nonatomic, assign) CGSize creativeSize;
+@property (nonatomic, assign) BOOL shouldInterceptLinks;
+@property (nonatomic, assign) BOOL scrollable;
+@property (nonatomic, assign) MPAdAnimationType animationType;
+@property (nonatomic, assign) CGSize originalSize;
 
 /*
  * Returns an MPAdView with the given ad unit ID.
@@ -229,6 +263,10 @@ typedef enum
  * You must call this method if you implement custom events.
  */
 - (void)customEventDidFailToLoadAd;
+
+//TODO: Marry Adview and admanager
+- (void)backFillWithNothing;
+
 
 @end
 

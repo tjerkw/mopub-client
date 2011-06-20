@@ -9,20 +9,20 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-@class MPAdView;
+@class MPAdManager;
 
 @interface MPBaseAdapter : NSObject 
 {
-	// Reference to the parent MPAdView.
-	MPAdView *_adView;
+	// Reference to the parent MPAdManager.
+	MPAdManager *_adManager;
 }
 
-@property (nonatomic, readonly) MPAdView *adView;
+@property (nonatomic, readonly) MPAdManager *adManager;
 
 /*
- * Creates an adapter with a reference to an MPAdView.
+ * Creates an adapter with a reference to an MPAdManager.
  */
-- (id)initWithAdView:(MPAdView *)adView;
+- (id)initWithAdManager:(MPAdManager *)adManager;
 
 /*
  * Sets the adapter's delegate to nil.

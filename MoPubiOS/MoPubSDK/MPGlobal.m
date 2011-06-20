@@ -32,3 +32,22 @@ CGFloat MPDeviceScaleFactor()
 	}
 	else return 1.0;
 }
+
+
+NSString *userAgentString()
+{
+	NSString *systemVersion = [[UIDevice currentDevice] systemVersion];
+	NSString *systemName = [[UIDevice currentDevice] systemName];
+	NSString *model = [[UIDevice currentDevice] model];
+	NSString *bundleName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
+	NSString *appVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+	return [NSString stringWithFormat:
+			@"%@/%@ (%@; U; CPU %@ %@ like Mac OS X; %@)",
+			bundleName, 
+			appVersion, 
+			model,
+			systemName, 
+			systemVersion, 
+			[[NSLocale currentLocale] localeIdentifier]
+			];
+}

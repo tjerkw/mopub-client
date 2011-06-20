@@ -11,3 +11,4 @@
 
 CGRect MPScreenBounds();
 CGFloat MPDeviceScaleFactor();
+NSString *userAgentString();

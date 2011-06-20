@@ -30,7 +30,7 @@
 }
 
 - (void)testSimplePass {
-	GHAssertFalse(NO, @"this should be false");
+	
 }
 
 @end
