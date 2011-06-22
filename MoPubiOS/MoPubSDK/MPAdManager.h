@@ -7,11 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "MPBaseAdapter.h"
+#import "MPStore.h"
 
-@protocol MPAdViewDelegate;
+@protocol MPAdapterDelegate;
 @class MPAdView, MPTimer, MPTimerTarget, MPBaseAdapter;
 
-@interface MPAdManager : NSObject {
+@interface MPAdManager : NSObject <MPAdapterDelegate, UIWebViewDelegate> {
 	// URL for initial MoPub ad request.
 	NSURL *_URL;
 
@@ -23,8 +25,13 @@
 
 	NSURLConnection *_conn;
 	
-	MPAdView *_delegate;
-	id<MPAdViewDelegate> _viewDelegate;
+	// Connection data object for ad request.
+	NSMutableData *_data;	
+	
+	// Pool of webviews being used as HTML ads.
+	NSMutableSet *_webviewPool;
+	
+	MPAdView *_adView;
 	
 	// Current adapter being used for serving native ads.
 	MPBaseAdapter *_currentAdapter;
@@ -61,12 +68,17 @@
 	// action, we must postpone any attempted timer scheduling until the action ends. This flag 
 	// allows the "action-ended" callbacks to decide whether the timer needs to be re-scheduled.
 	BOOL _autorefreshTimerNeedsScheduling;	
+	
+	// Handle to the shared store object that manages in-app purchases from ads.
+	MPStore *_store;
 }
 
+@property (nonatomic, retain) MPStore *store;
+@property (nonatomic, retain) NSMutableData *data;
+@property (nonatomic, retain) NSMutableSet *webviewPool;
 @property(nonatomic, copy) NSURL *URL;
 @property(nonatomic, retain) NSURLConnection *conn;
-@property(nonatomic, assign) MPAdView *delegate;
-@property (nonatomic, assign) id<MPAdViewDelegate> viewDelegate;
+@property(nonatomic, assign) MPAdView *adView;
 @property (nonatomic, copy) NSURL *clickURL;
 @property (nonatomic, copy) NSURL *interceptURL;
 @property (nonatomic, copy) NSURL *failURL;

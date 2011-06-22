@@ -43,6 +43,7 @@
 		A7519BE913A6C9F3006C0DAE /* iAd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7519BE813A6C9F3006C0DAE /* iAd.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		CBB6125313A94D8600580D49 /* MPAdManagerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CBB6125213A94D8600580D49 /* MPAdManagerTests.m */; };
 		CBB6125813A94FC400580D49 /* MPAdManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CBB6125713A94FC400580D49 /* MPAdManager.m */; };
+		CBCB106A13B00D9000048E23 /* MPIAdAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = CBCB106913B00D9000048E23 /* MPIAdAdapter.m */; };
 		CBD2580B13AAD1E300223CF9 /* MPAdView.m in Sources */ = {isa = PBXBuildFile; fileRef = CBD2580A13AAD1E300223CF9 /* MPAdView.m */; };
 /* End PBXBuildFile section */
 
@@ -120,6 +121,8 @@
 		CBB6125213A94D8600580D49 /* MPAdManagerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPAdManagerTests.m; sourceTree = "<group>"; };
 		CBB6125613A94FC400580D49 /* MPAdManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPAdManager.h; sourceTree = "<group>"; };
 		CBB6125713A94FC400580D49 /* MPAdManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPAdManager.m; sourceTree = "<group>"; };
+		CBCB106813B00D9000048E23 /* MPIAdAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPIAdAdapter.h; sourceTree = "<group>"; };
+		CBCB106913B00D9000048E23 /* MPIAdAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPIAdAdapter.m; sourceTree = "<group>"; };
 		CBD2580A13AAD1E300223CF9 /* MPAdView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPAdView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -274,6 +277,8 @@
 			children = (
 				CBB6122A13A93DA700580D49 /* MPAdMobInterstitialAdapter.h */,
 				CBB6122B13A93DA700580D49 /* MPAdMobInterstitialAdapter.m */,
+				CBCB106813B00D9000048E23 /* MPIAdAdapter.h */,
+				CBCB106913B00D9000048E23 /* MPIAdAdapter.m */,
 			);
 			name = MoPubNetworkAdapters;
 			path = ../extras/MoPubNetworkAdapters;
@@ -427,6 +432,7 @@
 				CBB6125313A94D8600580D49 /* MPAdManagerTests.m in Sources */,
 				CBB6125813A94FC400580D49 /* MPAdManager.m in Sources */,
 				CBD2580B13AAD1E300223CF9 /* MPAdView.m in Sources */,
+				CBCB106A13B00D9000048E23 /* MPIAdAdapter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

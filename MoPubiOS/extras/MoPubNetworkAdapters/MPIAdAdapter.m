@@ -7,6 +7,7 @@
 //
 
 #import "MPIAdAdapter.h"
+#import "MPAdManager.h"
 #import "MPAdView.h"
 #import "MPLogging.h"
 
@@ -53,7 +54,7 @@
 		
 		_adBannerView = [[MPIAdAdapter sharedAdBannerView] retain];
 		
-		CGSize size = self.adView.bounds.size;
+		CGSize size = self.adManager.adView.bounds.size;
 		_adBannerView.frame = (CGRect){{0, 0}, size};
 		_adBannerView.delegate = self;
 
@@ -64,8 +65,8 @@
 		if ([_adBannerView isBannerLoaded])
 		{
 			MPLogInfo(@"iAd banner has previously loaded an ad, so just show it.");
-			[self.adView setAdContentView:_adBannerView];
-			[self.adView adapterDidFinishLoadingAd:self shouldTrackImpression:NO];
+			[self.adManager.adView setAdContentView:_adBannerView];
+			[self.adManager adapterDidFinishLoadingAd:self shouldTrackImpression:NO];
 		}
 	} 
 	else 
@@ -142,28 +143,28 @@
 	// So, just don't allow the user to interact with the iAd.
 	[_adBannerView setUserInteractionEnabled:NO];
 	
-	[self.adView adapter:self didFailToLoadAdWithError:error];
+	[self.adManager adapter:self didFailToLoadAdWithError:error];
 }
 
 - (void)bannerViewActionDidFinish:(ADBannerView *)banner
 {
 	MPLogInfo(@"iAd finished executing banner action.");
-	[self.adView userActionDidEndForAdapter:self];
+	[self.adManager userActionDidEndForAdapter:self];
 }
 
 - (BOOL)bannerViewActionShouldBegin:(ADBannerView *)banner willLeaveApplication:(BOOL)willLeave
 {
 	MPLogInfo(@"iAd should begin banner action.");
-	[self.adView userActionWillBeginForAdapter:self];
-	if (willLeave) [self.adView userWillLeaveApplicationFromAdapter:self];
+	[self.adManager userActionWillBeginForAdapter:self];
+	if (willLeave) [self.adManager userWillLeaveApplicationFromAdapter:self];
 	return YES;
 }
 
 - (void)bannerViewDidLoadAd:(ADBannerView *)banner
 {
 	MPLogInfo(@"iAd has successfully loaded a new ad.");
-	[self.adView setAdContentView:_adBannerView];
-	[self.adView adapterDidFinishLoadingAd:self shouldTrackImpression:YES];
+	[self.adManager.adView setAdContentView:_adBannerView];
+	[self.adManager adapterDidFinishLoadingAd:self shouldTrackImpression:YES];
 }
 
 @end

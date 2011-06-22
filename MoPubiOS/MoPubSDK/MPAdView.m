@@ -51,6 +51,7 @@
 
 @implementation MPAdView
 
+@synthesize adContentView = _adContentView;
 @synthesize delegate = _delegate;
 @synthesize adUnitId = _adUnitId;
 @synthesize URL = _URL;

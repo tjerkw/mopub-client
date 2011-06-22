@@ -176,6 +176,7 @@ static NSString * const kAdTypeClear				= @"clear";
 	BOOL _stretchesWebContentToFill;
 }
 
+@property (nonatomic, retain) UIView *adContentView;
 @property (nonatomic, assign) id<MPAdViewDelegate> delegate;
 @property (nonatomic, copy) NSString *adUnitId;
 @property (nonatomic, copy) NSString *keywords;
