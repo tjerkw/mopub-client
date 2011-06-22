@@ -83,6 +83,22 @@
 	}
 }
 
+- (void)refreshAd
+{
+	[self.autorefreshTimer invalidate];
+	[self loadAdWithURL:nil];
+}
+
+- (void)forceRefreshAd
+{
+	// Cancel any existing request to the ad server.
+	[_conn cancel];
+	
+	_isLoading = NO;
+	[self.autorefreshTimer invalidate];
+	[self loadAdWithURL:nil];
+}
+
 - (void)loadAdWithURL:(NSURL *)URL
 {
 	if (_isLoading) 
@@ -100,16 +116,6 @@
 	_isLoading = YES;
 	
 	MPLogInfo(@"Ad manager (%p) fired initial ad request.", self);
-}
-
-- (void)forceRefreshAd
-{
-	// Cancel any existing request to the ad server.
-	[_conn cancel];
-	
-	_isLoading = NO;
-	[self.autorefreshTimer invalidate];
-	[self loadAdWithURL:nil];
 }
 
 -(NSURL *)serverRequestUrl {
@@ -244,6 +250,54 @@
 	}
 }
 
+- (void)adLinkClicked:(NSURL *)URL
+{
+	_adActionInProgress = YES;
+	
+	// Construct the URL that we want to load in the ad browser, using the click-tracking URL.
+	NSString *redirectURLString = [[URL absoluteString] URLEncodedString];	
+	NSURL *desiredURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@&r=%@",
+											  _clickURL,
+											  redirectURLString]];
+	
+	// Notify delegate that the ad browser is about to open.
+	if ([_adView.delegate respondsToSelector:@selector(willPresentModalViewForAd:)])
+		[_adView.delegate willPresentModalViewForAd:_adView];
+	
+	if ([self.autorefreshTimer isScheduled])
+		[self.autorefreshTimer pause];
+	
+	// Present ad browser.
+	MPAdBrowserController *browserController = [[MPAdBrowserController alloc] initWithURL:desiredURL 
+																				 delegate:self];
+	[[_adView.delegate viewControllerForPresentingModalView] presentModalViewController:browserController 			
+																			animated:YES];
+	[browserController release];
+}
+
+#pragma mark -
+#pragma mark MPAdBrowserControllerDelegate
+
+- (void)dismissBrowserController:(MPAdBrowserController *)browserController{
+	[self dismissBrowserController:browserController animated:YES];
+}
+
+- (void)dismissBrowserController:(MPAdBrowserController *)browserController animated:(BOOL)animated
+{
+	_adActionInProgress = NO;
+	[[_adView.delegate viewControllerForPresentingModalView] dismissModalViewControllerAnimated:animated];
+	
+	if ([_adView.delegate respondsToSelector:@selector(didDismissModalViewForAd:)])
+		[_adView.delegate didDismissModalViewForAd:_adView];
+	
+	if (_autorefreshTimerNeedsScheduling)
+	{
+		[self.autorefreshTimer scheduleNow];
+		_autorefreshTimerNeedsScheduling = NO;
+	}
+	else if ([self.autorefreshTimer isScheduled])
+		[self.autorefreshTimer resume];
+}
 
 # pragma mark -
 # pragma mark NSURLConnection delegate
@@ -534,7 +588,7 @@
 	// Intercept non-click forms of navigation (e.g. "window.location = ...") if the target URL
 	// has the interceptURL prefix. Launch the ad browser.
 	if (navigationType == UIWebViewNavigationTypeOther && 
-		self.shouldInterceptLinks && 
+		_adView.shouldInterceptLinks && 
 		self.interceptURL &&
 		[[URL absoluteString] hasPrefix:[self.interceptURL absoluteString]])
 	{
@@ -543,7 +597,7 @@
 	}
 	
 	// Launch the ad browser for all clicks (if shouldInterceptLinks is YES).
-	if (navigationType == UIWebViewNavigationTypeLinkClicked && self.shouldInterceptLinks)
+	if (navigationType == UIWebViewNavigationTypeLinkClicked && _adView.shouldInterceptLinks)
 	{
 		[self adLinkClicked:URL];
 		return NO;

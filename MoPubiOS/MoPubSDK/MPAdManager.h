@@ -9,11 +9,12 @@
 #import <Foundation/Foundation.h>
 #import "MPBaseAdapter.h"
 #import "MPStore.h"
+#import "MPAdBrowserController.h"
 
 @protocol MPAdapterDelegate;
 @class MPAdView, MPTimer, MPTimerTarget, MPBaseAdapter;
 
-@interface MPAdManager : NSObject <MPAdapterDelegate, UIWebViewDelegate> {
+@interface MPAdManager : NSObject <MPAdapterDelegate, MPAdBrowserControllerDelegate, UIWebViewDelegate> {
 	// URL for initial MoPub ad request.
 	NSURL *_URL;
 
