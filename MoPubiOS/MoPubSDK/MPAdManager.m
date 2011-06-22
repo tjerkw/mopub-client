@@ -529,7 +529,7 @@
 		}
 		
 		return NO;
-	}/*
+	}
 	
 	// Intercept non-click forms of navigation (e.g. "window.location = ...") if the target URL
 	// has the interceptURL prefix. Launch the ad browser.
@@ -550,7 +550,7 @@
 	}
 	
 	// Other stuff (e.g. JavaScript) should load as usual.
-	return YES;*/
+	return YES;	
 }
 
 - (UIWebView *)makeAdWebViewWithFrame:(CGRect)frame
