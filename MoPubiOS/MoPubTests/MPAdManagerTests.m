@@ -282,7 +282,7 @@
 	[[mockManager expect] scheduleAutorefreshTimer];
 	[[mockView expect] backFillWithNothing];
 	
-	[mockManager connection:mockConnect didFailWithError:nil];
+	[mockManager connection:nil didFailWithError:nil];
 	
 	GHAssertFalse(testAdView.adManager.isLoading, 
 				  @"isLoading value should be false.");
