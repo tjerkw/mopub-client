@@ -68,7 +68,6 @@
 		A71B900513A92B5D00E276BC /* MPAdBrowserController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MPAdBrowserController.xib; sourceTree = "<group>"; };
 		A71B900613A92B5D00E276BC /* MPAdConversionTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPAdConversionTracker.h; sourceTree = "<group>"; };
 		A71B900713A92B5D00E276BC /* MPAdConversionTracker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPAdConversionTracker.m; sourceTree = "<group>"; };
-		A71B900813A92B5D00E276BC /* MPAdManager+MPAdView+InterstitialPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MPAdManager+MPAdView+InterstitialPrivate.h"; sourceTree = "<group>"; };
 		A71B900913A92B5D00E276BC /* MPAdView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPAdView.h; sourceTree = "<group>"; };
 		A71B900B13A92B5D00E276BC /* MPBaseAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPBaseAdapter.h; sourceTree = "<group>"; };
 		A71B900C13A92B5D00E276BC /* MPBaseAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPBaseAdapter.m; sourceTree = "<group>"; };
@@ -115,8 +114,6 @@
 		A7519B9B13A699BC006C0DAE /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		A7519BE813A6C9F3006C0DAE /* iAd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = iAd.framework; path = System/Library/Frameworks/iAd.framework; sourceTree = SDKROOT; };
 		B925BA3D13B27900001A9D6F /* MPAdView+MPAdManagerPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MPAdView+MPAdManagerPrivate.h"; path = "../MoPubTests/MPAdView+MPAdManagerPrivate.h"; sourceTree = "<group>"; };
-		B925BB2813B27FCC001A9D6F /* MPAdManager+MPAdView+TestsPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MPAdManager+MPAdView+TestsPrivate.h"; sourceTree = "<group>"; };
-		B95CD0C113B299AB006B1C35 /* MPAdManager+MPAdaptersPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MPAdManager+MPAdaptersPrivate.h"; sourceTree = "<group>"; };
 		B95CD11513B29CE0006B1C35 /* MPGoogleAdMobAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPGoogleAdMobAdapter.h; sourceTree = "<group>"; };
 		B95CD11613B29CE0006B1C35 /* MPGoogleAdMobAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPGoogleAdMobAdapter.m; sourceTree = "<group>"; };
 		B95CD11713B29CE0006B1C35 /* MPGoogleAdSenseAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPGoogleAdSenseAdapter.h; sourceTree = "<group>"; };
@@ -125,6 +122,9 @@
 		B95CD11A13B29CE0006B1C35 /* MPMillennialAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPMillennialAdapter.m; sourceTree = "<group>"; };
 		B95CD11B13B29CE0006B1C35 /* MPMillennialInterstitialAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPMillennialInterstitialAdapter.h; sourceTree = "<group>"; };
 		B95CD11C13B29CE0006B1C35 /* MPMillennialInterstitialAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPMillennialInterstitialAdapter.m; sourceTree = "<group>"; };
+		B9DD979C13B2BEB4001559F7 /* MPAdManager+MPAdaptersPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MPAdManager+MPAdaptersPrivate.h"; sourceTree = SOURCE_ROOT; };
+		B9DD979D13B2BEB4001559F7 /* MPAdManager+MPAdView+InterstitialPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MPAdManager+MPAdView+InterstitialPrivate.h"; sourceTree = SOURCE_ROOT; };
+		B9DD979E13B2BEB4001559F7 /* MPAdManager+MPAdView+TestsPrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MPAdManager+MPAdView+TestsPrivate.h"; sourceTree = SOURCE_ROOT; };
 		CBB6122A13A93DA700580D49 /* MPAdMobInterstitialAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPAdMobInterstitialAdapter.h; sourceTree = "<group>"; };
 		CBB6122B13A93DA700580D49 /* MPAdMobInterstitialAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPAdMobInterstitialAdapter.m; sourceTree = "<group>"; };
 		CBB6125213A94D8600580D49 /* MPAdManagerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPAdManagerTests.m; sourceTree = "<group>"; };
@@ -363,10 +363,10 @@
 		B925BBD613B29265001A9D6F /* Private Interfaces */ = {
 			isa = PBXGroup;
 			children = (
+				B9DD979C13B2BEB4001559F7 /* MPAdManager+MPAdaptersPrivate.h */,
+				B9DD979D13B2BEB4001559F7 /* MPAdManager+MPAdView+InterstitialPrivate.h */,
+				B9DD979E13B2BEB4001559F7 /* MPAdManager+MPAdView+TestsPrivate.h */,
 				B925BA3D13B27900001A9D6F /* MPAdView+MPAdManagerPrivate.h */,
-				B95CD0C113B299AB006B1C35 /* MPAdManager+MPAdaptersPrivate.h */,
-				B925BB2813B27FCC001A9D6F /* MPAdManager+MPAdView+TestsPrivate.h */,
-				A71B900813A92B5D00E276BC /* MPAdManager+MPAdView+InterstitialPrivate.h */,
 			);
 			name = "Private Interfaces";
 			sourceTree = "<group>";
