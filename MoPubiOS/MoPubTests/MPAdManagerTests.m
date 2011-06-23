@@ -7,6 +7,7 @@
 #import "MPIAdAdapter.h"
 #import "MPStore.h"
 #import "MPGlobal.h"
+#import "MPTimer.h"
 #import "MPAdManager+MPAdView+TestsPrivate.h"
 #import <objc/runtime.h>
 
@@ -84,7 +85,6 @@
 	
 	int code = 500;
 	[[[mockResponse expect] andReturnValue:OCMOCK_VALUE(code)] statusCode];
-	//[[[mockResponse expect] andReturn:OCMOCK_VALUE(yes)] isKindOfClass:[NSHTTPURLResponse class]];
 	 
 	[mockManager connection:mockConnect didReceiveResponse:mockResponse];
 	[mockManager verify];
@@ -232,21 +232,24 @@
 				  @"isLoading value should be false.");
 	[mockManager verify];
 }
-/*
+
 //TODO: Fix release stuff
--(void)testAdapterDidFailToLoadWithError {
+/*-(void)testAdapterDidFailToLoadWithError {
 	MPBaseAdapter *testAdapter = [[MPBaseAdapter alloc] initWithAdManager:testAdView.adManager];
 	id mockAdapter = [OCMockObject partialMockForObject:testAdapter];
+	testAdView.adManager.currentAdapter = mockAdapter;
 	
 	[[mockAdapter expect] unregisterDelegate];
-	[[mockAdapter reject] release];
+	[[mockAdapter expect] release];
 	[[mockManager expect] loadAdWithURL:testAdView.adManager.failURL];
 	
-	[mockManager adapter:testAdapter didFailToLoadAdWithError:nil];
+	[mockManager adapter:mockAdapter didFailToLoadAdWithError:nil];
 	
-	GHAssertNil(testAdapter, @"Adapter should be nil.");
-	[mockManager verify];
-	[mockAdapter verify];
+	//GHAssertNil(testAdapter, @"Adapter should be nil.");
+	//GHAssertFalse(testAdView.adManager.isLoading, 
+				 // @"isLoading value should be false.");
+	//[mockAdapter verify];
+	//[mockManager verify];
 }*/
 
 -(void)testUserActionWillBeginForAdapter {
@@ -268,7 +271,6 @@
 				  @"autorefreshTimerNeedsScheduling value should be false");
 	[mockManager verify];
 }
-
 
 #pragma mark -
 #pragma mark Connection Tests
@@ -316,7 +318,6 @@
 }
 
 -(void)testConnectionDidReceiveData {	
-	
 	NSMutableData *newData = [[NSMutableData alloc] initWithLength:4];
 	id mockData = [OCMockObject mockForClass:[NSMutableData class]];
 	testAdView.adManager.data = mockData;
@@ -426,4 +427,36 @@
 						 @"Webview frame is not initialized property");
 }
 
+-(void)testAdLinkClicked {
+	[mockManager adLinkClicked:nil];
+	
+	GHAssertTrue(testAdView.adManager.adActionInProgress, 
+				 @"adActionInProgress value should be true.");
+	GHAssertFalse([testAdView.adManager.autorefreshTimer isScheduled], 
+				  @"Auto refresh timer is not paused");
+}
+
+-(void)testDismissBrowserController {
+	[mockManager dismissBrowserController:nil];
+	GHAssertFalse(testAdView.adManager.adActionInProgress, 
+				  @"adActionInProgress value should be false.");
+	GHAssertFalse(testAdView.adManager.autorefreshTimerNeedsScheduling, 
+				  @"autorefreshTimerNeedsScheduling should be false.");
+	GHAssertTrue([testAdView.adManager.autorefreshTimer isScheduled],
+				  @"autorefreshTimer should be scheduled");
+}
+
+-(void)testScheduleAutorefreshTimer {
+	//Initializes an autorefreshTimer
+	[[[mockResponse expect] andReturn:headerFields] allHeaderFields];
+	int code = 200;
+	[[[mockResponse expect] andReturnValue:OCMOCK_VALUE(code)] statusCode];
+	
+	[mockManager connection:nil didReceiveResponse:mockResponse];
+	
+	[mockManager scheduleAutorefreshTimer];
+	GHAssertTrue([testAdView.adManager.autorefreshTimer isScheduled],
+				 @"autorefreshTimer should be scheduled");
+}
+	
 @end

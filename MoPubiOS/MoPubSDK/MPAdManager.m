@@ -85,6 +85,7 @@ static NSString * const kAdTypeClear				= @"clear";
 @property (nonatomic, retain) MPStore *store;
 @property (nonatomic, retain) NSMutableData *data;
 @property (nonatomic, retain) NSMutableSet *webviewPool;
+@property (nonatomic, retain) MPBaseAdapter *currentAdapter;
 
 @end
 
@@ -107,6 +108,7 @@ static NSString * const kAdTypeClear				= @"clear";
 @synthesize store = _store;
 @synthesize data = _data;
 @synthesize webviewPool = _webviewPool;
+@synthesize currentAdapter = _currentAdapter;
 
 -(id)initWithAdView:(MPAdView *)adView {
 	if (self = [super init]) {

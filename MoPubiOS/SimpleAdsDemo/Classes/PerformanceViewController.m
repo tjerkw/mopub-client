@@ -22,7 +22,7 @@
 }
 
 -(void)adViewDidLoadAd:(MPAdView *)_adView{
-	[self outputLine:[NSString stringWithFormat:@"Calling MoPub with %@", _adView.URL]];
+	//[self outputLine:[NSString stringWithFormat:@"Calling MoPub with %@", _adView.adManager.URL]];
 }
 
 - (void)adView:(MPAdView *)adView didReceiveResponseParams:(NSDictionary *)params{
@@ -36,7 +36,7 @@
 
 - (void)adViewDidFailToLoadAd:(MPAdView *)_adView{
 	[self outputLine:@"Ad did not load."];
-//	[self outputLine:[NSString stringWithFormat:@"Payload (%d octets) = %@", [_adView.data length], [[NSString alloc] initWithData:_adView.data encoding:NSUTF8StringEncoding]]];
+	//[self outputLine:[NSString stringWithFormat:@"Payload (%d octets) = %@", [_adView.data length], [[NSString alloc] initWithData:_adView.data encoding:NSUTF8StringEncoding]]];
 }
 
 - (IBAction) refreshAd {

@@ -11,7 +11,7 @@
 #import <time.h>
 #import "MPAdView+MPAdManagerPrivate.h"
 
-static NSString * const kAdAnimationId				= @"MPAdTransition";
+static NSString * const kAdAnimationId = @"MPAdTransition";
 
 @interface MPAdView (Internal)
 static NSString * userAgentString;

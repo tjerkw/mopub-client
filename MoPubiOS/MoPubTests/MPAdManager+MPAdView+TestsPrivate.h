@@ -57,6 +57,7 @@ static NSString * const kAdTypeClear				= @"clear";
 @property (nonatomic, retain) NSMutableSet *webviewPool;
 @property (nonatomic, retain) NSMutableData *data;
 @property (nonatomic, retain) MPStore *store;
+@property (nonatomic, retain) MPBaseAdapter *currentAdapter;
 
 - (NSString *)orientationQueryStringComponent;
 - (NSString *)scaleFactorQueryStringComponent;
@@ -67,6 +68,7 @@ static NSString * const kAdTypeClear				= @"clear";
 - (UIWebView *)makeAdWebViewWithFrame:(CGRect)frame;
 - (void)trackClick;
 - (void)trackImpression;
+- (void)adLinkClicked:(NSURL *)URL;
 - (void)customLinkClickedForSelectorString:(NSString *)selectorString 
 							withDataString:(NSString *)dataString;
 @end
