@@ -9,7 +9,7 @@
 #import "MPInterstitialAdController.h"
 #import "MPBaseInterstitialAdapter.h"
 #import "MPAdapterMap.h"
-#import "MPAdView+InterstitialPrivate.h"
+#import "MPAdManager+MPAdView+InterstitialPrivate.h"
 
 static const CGFloat kCloseButtonPadding				= 6.0;
 static NSString * const kCloseButtonXImageName			= @"MPCloseButtonX.png";
@@ -114,7 +114,7 @@ static NSString * const kOrientationBoth				= @"b";
 		
 		_adView = [[MPAdView alloc] initWithAdUnitId:self.adUnitId size:CGSizeZero];
 		_adView.stretchesWebContentToFill = YES;
-		_adView.ignoresAutorefresh = YES;
+		_adView.adManager.ignoresAutorefresh = YES;
 		_adView.delegate = self;
 		
 		// Typically, we don't set an autoresizing mask for MPAdView, but in this case we always
@@ -357,7 +357,7 @@ static NSString * const kOrientationBoth				= @"b";
 - (void)adapterDidFinishLoadingAd:(MPBaseInterstitialAdapter *)adapter
 {	
 	_ready = YES;
-	_adView.isLoading = NO;
+	_adView.adManager.isLoading = NO;
 	if ([self.parent respondsToSelector:@selector(interstitialDidLoadAd:)])
 		[self.parent interstitialDidLoadAd:self];
 }
@@ -371,12 +371,12 @@ static NSString * const kOrientationBoth				= @"b";
 	[self.currentAdapter unregisterDelegate];
 	self.currentAdapter = nil;
 	
-	[_adView adapter:nil didFailToLoadAdWithError:error];
+	[_adView.adManager adapter:nil didFailToLoadAdWithError:error];
 }
 
 - (void)interstitialWillAppearForAdapter:(MPBaseInterstitialAdapter *)adapter
 {
-	[_adView trackImpression];
+	[_adView.adManager trackImpression];
 	if ([self.parent respondsToSelector:@selector(interstitialWillAppear:)])
 		[self.parent interstitialWillAppear:self];
 }

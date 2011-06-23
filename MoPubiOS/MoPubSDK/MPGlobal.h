@@ -11,4 +11,13 @@
 
 CGRect MPScreenBounds();
 CGFloat MPDeviceScaleFactor();
-NSString *userAgentString();
+NSString *hashedMoPubUDID();
+
+@interface NSString (MPAdditions)
+
+/* 
+ * Returns string with reserved/unsafe characters encoded.
+ */
+-(NSString *) URLEncodedString;
+
+@end

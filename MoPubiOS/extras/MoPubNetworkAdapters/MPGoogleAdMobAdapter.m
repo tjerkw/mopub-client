@@ -8,14 +8,15 @@
 
 #import "MPGoogleAdMobAdapter.h"
 #import "CJSONDeserializer.h"
-#import "MPAdView.h"
+#import "MPAdManager.h"
 #import "MPLogging.h"
+#import "MPAdManager+MPAdaptersPrivate.h"
 
 @implementation MPGoogleAdMobAdapter
 
-- (id)initWithAdView:(MPAdView *)adView
+- (id)initWithAdView:(MPAdManager *)adManager
 {
-	if (self = [super initWithAdView:adView])
+	if (self = [super initWithAdManager:adManager])
 	{
 		CGRect frame = CGRectMake(0.0, 0.0, GAD_SIZE_320x50.width, GAD_SIZE_320x50.height);
 		_adBannerView = [[GADBannerView alloc] initWithFrame:frame];
@@ -39,7 +40,7 @@
 																				  error:NULL];
 	
 	_adBannerView.adUnitID = [hdrParams objectForKey:@"adUnitID"];
-	_adBannerView.rootViewController = [self.adView.delegate viewControllerForPresentingModalView];
+	_adBannerView.rootViewController = [self.adManager viewControllerForPresentingModalView];
 	
 	GADRequest *request = [GADRequest request];
 	// Here, you can specify a list of devices that will receive test ads.
@@ -54,29 +55,29 @@
 
 - (void)adViewDidReceiveAd:(GADBannerView *)bannerView
 {
-	[self.adView setAdContentView:bannerView];
-	[self.adView adapterDidFinishLoadingAd:self shouldTrackImpression:YES];
+	[self.adManager setAdContentView:bannerView];
+	[self.adManager adapterDidFinishLoadingAd:self shouldTrackImpression:YES];
 }
 
 - (void)adView:(GADBannerView *)bannerView
 		didFailToReceiveAdWithError:(GADRequestError *)error
 {
-	[self.adView adapter:self didFailToLoadAdWithError:nil];
+	[self.adManager adapter:self didFailToLoadAdWithError:nil];
 }
 
 - (void)adViewWillPresentScreen:(GADBannerView *)bannerView
 {
-	[self.adView userActionWillBeginForAdapter:self];
+	[self.adManager userActionWillBeginForAdapter:self];
 }
 
 - (void)adViewDidDismissScreen:(GADBannerView *)bannerView
 {
-	[self.adView userActionDidEndForAdapter:self];
+	[self.adManager userActionDidEndForAdapter:self];
 }
 
 - (void)adViewWillLeaveApplication:(GADBannerView *)bannerView
 {
-	[self.adView userWillLeaveApplicationFromAdapter:self];
+	[self.adManager userWillLeaveApplicationFromAdapter:self];
 }
 
 @end

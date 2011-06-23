@@ -10,6 +10,7 @@
 #import "CJSONDeserializer.h"
 #import "MPAdView.h"
 #import "MPLogging.h"
+#import "MPAdManager+MPAdaptersPrivate.h"
 
 static NSDictionary *GADHeaderAttrMap = nil;
 
@@ -41,9 +42,9 @@ static NSDictionary *GADHeaderAttrMap = nil;
 											 nil];
 }
 
-- (id)initWithAdView:(MPAdView *)adView
+- (id)initWithAdView:(MPAdManager *)adManager
 {
-	if (self = [super initWithAdView:adView])
+	if (self = [super initWithAdManager:adManager])
 	{
 		_adViewController = [[GADAdViewController alloc] initWithDelegate:self];
 	}
@@ -130,32 +131,32 @@ static NSDictionary *GADHeaderAttrMap = nil;
 - (UIViewController *)viewControllerForModalPresentation:
 (GADAdViewController *)adController
 {
-	return [self.adView.delegate viewControllerForPresentingModalView];
+	return [self.adManager viewControllerForPresentingModalView];
 }
 
 - (void)loadSucceeded:(GADAdViewController *)adController
           withResults:(NSDictionary *)results
 {
-	[self.adView setAdContentView:adController.view];
-	[self.adView adapterDidFinishLoadingAd:self shouldTrackImpression:YES];
+	[self.adManager setAdContentView:adController.view];
+	[self.adManager adapterDidFinishLoadingAd:self shouldTrackImpression:YES];
 }
 
 - (void)loadFailed:(GADAdViewController *)adController
          withError:(NSError *)error
 {
-	[self.adView adapter:self didFailToLoadAdWithError:nil];
+	[self.adManager adapter:self didFailToLoadAdWithError:nil];
 }
 
 - (GADAdClickAction)adControllerActionModelForAdClick:
 (GADAdViewController *)adController
 {
-	[self.adView userActionWillBeginForAdapter:self];
+	[self.adManager userActionWillBeginForAdapter:self];
 	return GAD_ACTION_DISPLAY_INTERNAL_WEBSITE_VIEW;
 }
 
 - (void)adControllerDidCloseWebsiteView:(GADAdViewController *)adController
 {
-	[self.adView userActionDidEndForAdapter:self];
+	[self.adManager userActionDidEndForAdapter:self];
 }
 
 @end

@@ -10,6 +10,7 @@
 #import "MPAdManager.h"
 #import "MPAdView.h"
 #import "MPLogging.h"
+#import "MPAdManager+MPAdaptersPrivate.h"
 
 @implementation MPCustomEventAdapter
 
@@ -26,6 +27,7 @@
 	SEL selector = NSSelectorFromString(selectorString);
 	
 	// First, try calling the no-object selector.
+	
 	if ([self.adManager.adView.delegate respondsToSelector:selector])
 	{
 		[self.adManager.adView.delegate performSelector:selector];
@@ -45,7 +47,7 @@
 			MPLogError(@"Ad view delegate does not implement custom event selectors %@ or %@.",
 				  selectorString,
 				  selectorWithObjectString);
-			[self.adManager.adView customEventDidFailToLoadAd];
+			[self.adManager customEventDidFailToLoadAd];
 		}
 	}
 

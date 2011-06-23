@@ -3,12 +3,16 @@
 
 #import "MPAdManager.h"
 #import "MPAdView.h"
+#import "MPBaseAdapter.h"
 #import "MPIAdAdapter.h"
 #import "MPStore.h"
+#import "MPGlobal.h"
+#import "MPAdManager+MPAdView+TestsPrivate.h"
 #import <objc/runtime.h>
 
 @interface MPAdManagerTests : GHTestCase {
 	MPAdView *testAdView;
+	id mockManager;
 	id mockConnect;
 	id mockResponse;
 	id mockWebview;
@@ -27,6 +31,7 @@
 // Run before the tests are run for this class
 - (void)setUpClass {
 	testAdView = [[MPAdView alloc] initWithAdUnitId:@"(adunitid)" size:CGSizeZero];
+	mockManager = [OCMockObject partialMockForObject:testAdView.adManager];
 	mockConnect = [OCMockObject niceMockForClass:[NSURLConnection class]];
 	mockResponse = [OCMockObject niceMockForClass:[NSHTTPURLResponse class]];
 	mockWebview = [OCMockObject niceMockForClass:[UIWebView class]];
@@ -44,19 +49,24 @@
 					@"network_type", kNetworkTypeHeaderKey,
 					@"ad_type", kAdTypeHeaderKey,
 					nil];
+	
+}
+
+-(BOOL)shouldRunOnMainThread {
+	return YES;
 }
 
 - (void)tearDownClass {
 }
 
+#pragma mark -
+#pragma mark Initialization Tests
+
 - (void)testConnectionGeneration {
 	testAdView.keywords = @"(keywords)";
-	
-	MPAdManager *manager = [[MPAdManager alloc] initWithAdView:testAdView];
-	id mockManager = [OCMockObject partialMockForObject:manager];
-	
+		
 	NSString *testURL = [NSString stringWithFormat:@"http://ads.mopub.com/m/ad?v=4&udid=%@&q=(keywords)&id=(adunitid)&o=(orientation)&sc=(scalefactor)&z=(timezone)&ll=(location)",  
-						 [[UIDevice currentDevice] hashedMoPubUDID]];
+						 hashedMoPubUDID()];
 
 	[[[mockManager stub] andReturn:@"&o=(orientation)"] orientationQueryStringComponent];
 	[[[mockManager stub] andReturn:@"&sc=(scalefactor)"] scaleFactorQueryStringComponent];
@@ -65,13 +75,10 @@
 	
 	[mockManager loadAdWithURL:nil];
 	
-	GHAssertEqualObjects(testURL, manager.URL.absoluteString, @"Incorrect URL generated");
+	GHAssertEqualObjects(testURL, testAdView.adManager.URL.absoluteString, @"Incorrect URL generated");
 }
 
--(void)testConnectionDelegate {	
-	MPAdManager *manager = [[MPAdManager alloc] initWithAdView:testAdView];
-	id mockManager = [OCMockObject partialMockForObject:manager];
-				
+-(void)testConnectionDelegate {					
 	[[mockManager expect] connection:mockConnect didFailWithError:OCMOCK_ANY];
 	[[mockConnect expect] cancel];
 	
@@ -88,41 +95,36 @@
 	[[[mockResponse expect] andReturn:headerFields] allHeaderFields];
 	int code = 200;
 	[[[mockResponse expect] andReturnValue:OCMOCK_VALUE(code)] statusCode];
-		
-	MPAdManager *manager = [[MPAdManager alloc] initWithAdView:testAdView];
-	id mockManager = [OCMockObject partialMockForObject:manager];
-	
+			
 	[mockManager connection:nil didReceiveResponse: mockResponse];
 
 	GHAssertEqualObjects([headerFields objectForKey:kClickthroughHeaderKey], 
-						 manager.clickURL.absoluteString, 
+						 testAdView.adManager.clickURL.absoluteString, 
 						 @"Click URLs are not equal");
 	GHAssertEqualObjects([headerFields objectForKey:kLaunchpageHeaderKey], 
-						 manager.interceptURL.absoluteString, 
+						 testAdView.adManager.interceptURL.absoluteString, 
 						 @"Intercept URLs are not equal");
 	GHAssertEqualObjects([headerFields objectForKey:kFailUrlHeaderKey], 
-						 manager.failURL.absoluteString, 
+						 testAdView.adManager.failURL.absoluteString, 
 						 @"Fail URLs are not equal");
 	GHAssertEqualObjects([headerFields objectForKey:kImpressionTrackerHeaderKey], 
-						 manager.impTrackerURL.absoluteString, 
+						 testAdView.adManager.impTrackerURL.absoluteString, 
 						 @"Impression Tracker URLs are not equal");
 	GHAssertEquals([[headerFields objectForKey:kInterceptLinksHeaderKey] boolValue], 
-				   manager.adView.shouldInterceptLinks, 
+				   testAdView.shouldInterceptLinks, 
 				   @"shouldInterceptLinks are not equal");
 	GHAssertEquals([[headerFields objectForKey:kScrollableHeaderKey] boolValue], 
-				   manager.adView.scrollable, 
+				   testAdView.scrollable, 
 				   @"Scrollability is not equal");
 	GHAssertEquals([[headerFields objectForKey:kWidthHeaderKey] floatValue], 
-				   manager.adView.creativeSize.width, 
+				   testAdView.creativeSize.width, 
 				   @"Creative widths are not equal");
 	GHAssertEquals([[headerFields objectForKey:kHeightHeaderKey] floatValue],
-				   manager.adView.creativeSize.height, 
+				   testAdView.creativeSize.height, 
 				   @"Creative heights are not equal");
 	GHAssertEquals([[headerFields objectForKey:kAnimationHeaderKey] intValue], 
-				   manager.adView.animationType, 
+				   testAdView.animationType, 
 				   @"Animation types are not equal");
-	//TODO: Ignore networktypeheader
-	//TODO: Ignoring adtypeheader
 		
 	[mockManager verify];
 	[mockResponse verify];
@@ -132,20 +134,20 @@
 	[[[mockResponse expect] andReturn:headerFields] allHeaderFields];
 	int code = 200;
 	[[[mockResponse expect] andReturnValue:OCMOCK_VALUE(code)] statusCode];
-		
-	MPAdManager *manager = [[MPAdManager alloc] initWithAdView:testAdView];
-	id mockManager = [OCMockObject partialMockForObject:manager];
-	
+			
 	[mockManager connection:nil didReceiveResponse:mockResponse];
 
-	GHAssertEquals(manager.adView.creativeSize, 
-				   manager.adView.originalSize, 
+	GHAssertEquals(testAdView.creativeSize, 
+				   testAdView.originalSize, 
 				   @"Creative size should be equal to original size, since no size headers were passed.");
-	GHAssertNotNil(manager.autorefreshTimer, 
+	GHAssertNotNil(testAdView.adManager.autorefreshTimer, 
 				   @"Autorefresh timer should not be nil.");
 		
 	[mockManager verify];
 }
+
+#pragma mark -
+#pragma mark Adapter Tests
 
 -(void)testNilOrHTMLAdapterInitialization {
 	[headerFields setValue:@"html" forKey:kAdTypeHeaderKey]; 
@@ -153,10 +155,7 @@
 	[[[mockResponse expect] andReturn:headerFields] allHeaderFields];
 	int code = 200;
 	[[[mockResponse expect] andReturnValue:OCMOCK_VALUE(code)] statusCode];
-	
-	MPAdManager *manager = [[MPAdManager alloc] initWithAdView:testAdView];
-	id mockManager = [OCMockObject partialMockForObject:manager];
-	
+		
 	[[mockManager expect] replaceCurrentAdapterWithAdapter:nil];
 	[mockManager connection:nil didReceiveResponse:mockResponse];
 
@@ -171,9 +170,6 @@
 	[[[mockResponse expect] andReturnValue:OCMOCK_VALUE(code)] statusCode];
 	
 	id mockAdView = [OCMockObject partialMockForObject:testAdView];
-	
-	MPAdManager *manager = [[MPAdManager alloc] initWithAdView:testAdView];
-	id mockManager = [OCMockObject partialMockForObject:manager];
 		
 	[[mockManager expect] replaceCurrentAdapterWithAdapter:nil];
 
@@ -183,7 +179,7 @@
 	
 	[mockManager connection:mockConnect didReceiveResponse:mockResponse];
 	
-	GHAssertFalse(manager.isLoading, 
+	GHAssertFalse(testAdView.adManager.isLoading, 
 				  @"isLoading value should be false.");
 	[mockManager verify];
 	[mockConnect verify];
@@ -196,16 +192,13 @@
 	int code = 200;
 	[[[mockResponse expect] andReturnValue:OCMOCK_VALUE(code)] statusCode];
 		
-	MPAdManager *manager = [[MPAdManager alloc] initWithAdView:testAdView];
-	id mockManager = [OCMockObject partialMockForObject:manager];
-		
 	[[mockManager expect] replaceCurrentAdapterWithAdapter:nil];
 	[[mockConnect expect] cancel];
 	[[mockManager expect] loadAdWithURL:[NSURL URLWithString:@"http://www.failurl.com"]];
 	
 	[mockManager connection:mockConnect didReceiveResponse:mockResponse];
 	
-	GHAssertFalse(manager.isLoading, 
+	GHAssertFalse(testAdView.adManager.isLoading, 
 				  @"isLoading value should be false.");
 	[mockManager verify];
 	[mockConnect verify];
@@ -218,16 +211,10 @@
 	int code = 200;
 	[[[mockResponse expect] andReturnValue:OCMOCK_VALUE(code)] statusCode];
 	
-	MPAdManager *manager = [[MPAdManager alloc] initWithAdView:testAdView];
-	id mockManager = [OCMockObject partialMockForObject:manager];
-	
 	id mockView = [OCMockObject partialMockForObject:testAdView];
 	
 	[[[mockManager expect] andForwardToRealObject] replaceCurrentAdapterWithAdapter:[OCMArg any]];
 	[[mockConnect expect] cancel];
-	//TODO: Figure out how to test for certain calls
-	//[[[mockManager expect] andForwardToRealObject] adapterDidFinishLoadingAd:[OCMArg any] shouldTrackImpression:NO];
-	//[[mockView expect] setAdContentView:[OCMArg any]];
 	
 	[mockManager connection:mockConnect didReceiveResponse:mockResponse];
 	
@@ -236,41 +223,85 @@
 	[mockView verify];
 }
 
+-(void)testAdapterDidFinishLoading {
+	[[mockManager expect] trackImpression];
+	[[mockManager expect] scheduleAutorefreshTimer];
+	
+	[mockManager adapterDidFinishLoadingAd:nil shouldTrackImpression:YES];
+	GHAssertFalse(testAdView.adManager.isLoading, 
+				  @"isLoading value should be false.");
+	[mockManager verify];
+}
+/*
+//TODO: Fix release stuff
+-(void)testAdapterDidFailToLoadWithError {
+	MPBaseAdapter *testAdapter = [[MPBaseAdapter alloc] initWithAdManager:testAdView.adManager];
+	id mockAdapter = [OCMockObject partialMockForObject:testAdapter];
+	
+	[[mockAdapter expect] unregisterDelegate];
+	[[mockAdapter reject] release];
+	[[mockManager expect] loadAdWithURL:testAdView.adManager.failURL];
+	
+	[mockManager adapter:testAdapter didFailToLoadAdWithError:nil];
+	
+	GHAssertNil(testAdapter, @"Adapter should be nil.");
+	[mockManager verify];
+	[mockAdapter verify];
+}*/
+
+-(void)testUserActionWillBeginForAdapter {
+	[[mockManager expect] trackClick];
+	
+	[mockManager userActionWillBeginForAdapter: nil];
+	
+	GHAssertTrue(testAdView.adManager.adActionInProgress, 
+				 @"adActionInProgress value should be true.");
+	[mockManager verify];
+}
+
+-(void)testUserActionDidEndForAdapter {
+	[mockManager userActionDidEndForAdapter:nil];
+	
+	GHAssertFalse(testAdView.adManager.adActionInProgress, 
+				  @"adActionInProgress value should be false.");
+	GHAssertFalse(testAdView.adManager.autorefreshTimerNeedsScheduling, 
+				  @"autorefreshTimerNeedsScheduling value should be false");
+	[mockManager verify];
+}
+
+
+#pragma mark -
+#pragma mark Connection Tests
+
 -(void)testConnectionDidFail {
 	int code = 200;
 	[[[mockResponse expect] andReturnValue:OCMOCK_VALUE(code)] statusCode];
 	
 	id mockView = [OCMockObject partialMockForObject:testAdView];
-	MPAdManager *manager = [[MPAdManager alloc] initWithAdView:mockView];
-	id mockManager = [OCMockObject partialMockForObject:manager];
 
 	[[mockManager expect] scheduleAutorefreshTimer];
 	[[mockView expect] backFillWithNothing];
 	
 	[mockManager connection:mockConnect didFailWithError:nil];
 	
-	GHAssertFalse(manager.isLoading, 
+	GHAssertFalse(testAdView.adManager.isLoading, 
 				  @"isLoading value should be false.");
-	GHAssertNotNil(manager.autorefreshTimer, 
+	GHAssertNotNil(testAdView.adManager.autorefreshTimer, 
 				   @"Autorefresh timer should not be nil.");
 	[mockManager verify];
 }
 
 -(void)testConnectionDidFinishLoading {	
-	id mockView = [OCMockObject partialMockForObject:testAdView];
 	testAdView.creativeSize = CGSizeMake(320, 250);
-	
-	MPAdManager *manager = [[MPAdManager alloc] initWithAdView:mockView];
-	id mockManager = [OCMockObject partialMockForObject:manager];
-	
-	unsigned poolSize = manager.webviewPool.count;
+		
+	unsigned poolSize = testAdView.adManager.webviewPool.count;
 	
 	[[[mockManager expect] andForwardToRealObject] 
 		makeAdWebViewWithFrame:(CGRect){{0, 0}, testAdView.creativeSize}];
 
 	[mockManager connectionDidFinishLoading:mockConnect];
 	
-	NSEnumerator *enumerator = [manager.webviewPool objectEnumerator];
+	NSEnumerator *enumerator = [testAdView.adManager.webviewPool objectEnumerator];
 	UIWebView *webview;
 	while ((webview = [enumerator nextObject])) {
 		GHAssertEquals(webview.frame.size, 
@@ -278,55 +309,29 @@
 					   @"Webview size does not match creative size");
 	}
 	
-	GHAssertEquals(manager.webviewPool.count, 
+	GHAssertEquals(testAdView.adManager.webviewPool.count, 
 				   poolSize + 1, 
 				   @"Webview pool has incorrect count.");
 	[mockManager verify];
 }
 
 -(void)testConnectionDidReceiveData {	
-	MPAdManager *manager = [[MPAdManager alloc] initWithAdView:testAdView];
-	id mockManager = [OCMockObject partialMockForObject:manager];
 	
 	NSMutableData *newData = [[NSMutableData alloc] initWithLength:4];
 	id mockData = [OCMockObject mockForClass:[NSMutableData class]];
-	manager.data = mockData;
+	testAdView.adManager.data = mockData;
 	
 	[[mockData expect] appendData:newData];
 	[mockManager connection:mockConnect didReceiveData:newData];
 	
 	[mockData verify];
 }
-/*
- 
- return NO;
- }
- 
- // Intercept non-click forms of navigation (e.g. "window.location = ...") if the target URL
- // has the interceptURL prefix. Launch the ad browser.
- if (navigationType == UIWebViewNavigationTypeOther && 
- self.shouldInterceptLinks && 
- self.interceptURL &&
- [[URL absoluteString] hasPrefix:[self.interceptURL absoluteString]])
- {
- [self adLinkClicked:URL];
- return NO;
- }
- 
- // Launch the ad browser for all clicks (if shouldInterceptLinks is YES).
- if (navigationType == UIWebViewNavigationTypeLinkClicked && self.shouldInterceptLinks)
- {
- [self adLinkClicked:URL];
- return NO;
- }
- 
- // Other stuff (e.g. JavaScript) should load as usual.
- return YES;
-*/ 
+
+#pragma mark -
+#pragma mark Webview Tests
+
 -(void)testWebviewOnClose {
 	id mockView = [OCMockObject partialMockForObject:testAdView];
-	MPAdManager *manager = [[MPAdManager alloc] initWithAdView:mockView];
-	id mockManager = [OCMockObject partialMockForObject:manager];
 	
 	[[[mockView expect] andForwardToRealObject] didCloseAd:nil];
 	
@@ -342,8 +347,6 @@
 	id mockDelegate = [OCMockObject mockForProtocol:@protocol(MPAdViewDelegate)];
 	testAdView.delegate = mockDelegate;
 	id mockView = [OCMockObject partialMockForObject:testAdView];
-	MPAdManager *manager = [[MPAdManager alloc] initWithAdView:mockView];
-	id mockManager = [OCMockObject partialMockForObject:manager];
 	
 	BOOL yes = YES;
 	[[[mockDelegate stub] andReturnValue:OCMOCK_VALUE(yes)] respondsToSelector:
@@ -351,14 +354,14 @@
 	
 	[[mockView expect] setAdContentView:mockWebview];
 	[[mockManager expect] scheduleAutorefreshTimer];
-	[[mockDelegate expect] adViewDidLoadAd:mockView];
+	[[mockDelegate expect] adViewDidLoadAd:testAdView];
 	
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:
 												  [NSURL URLWithString:@"mopub://finishLoad"]];
 	
 	[mockManager webView:mockWebview shouldStartLoadWithRequest:request navigationType:0];	
 	
-	GHAssertFalse(manager.isLoading, 
+	GHAssertFalse(testAdView.adManager.isLoading, 
 				  @"isLoading value should be false.");
 	[mockView verify];
 	[mockManager verify];
@@ -366,22 +369,19 @@
 }
 
 -(void)testWebviewOnFailLoad {		
-	MPAdManager *manager = [[MPAdManager alloc] initWithAdView:testAdView];
-	id mockManager = [OCMockObject partialMockForObject:manager];
-		
-	[manager.webviewPool addObject:mockWebview];
-	unsigned poolSize = manager.webviewPool.count;
+	[testAdView.adManager.webviewPool addObject:mockWebview];
+	unsigned poolSize = testAdView.adManager.webviewPool.count;
 
-	[[mockManager expect] loadAdWithURL:manager.failURL];
+	[[mockManager expect] loadAdWithURL:testAdView.adManager.failURL];
 	[[mockWebview expect] stopLoading];
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:
 							 [NSURL URLWithString:@"mopub://failLoad"]];
 		
 	[mockManager webView:mockWebview shouldStartLoadWithRequest:request navigationType:0];	
 	
-	GHAssertFalse(manager.isLoading, 
+	GHAssertFalse(testAdView.adManager.isLoading, 
 				  @"isLoading value should be false.");
-	GHAssertEquals(manager.webviewPool.count, 
+	GHAssertEquals(testAdView.adManager.webviewPool.count, 
 				   poolSize - 1, 
 				   @"Webview pool has incorrect count.");
 	
@@ -390,10 +390,8 @@
 }
 
 -(void)testWebviewOnInAppPurchase {
-	MPAdManager *manager = [[MPAdManager alloc] initWithAdView:testAdView];
-	id mockManager = [OCMockObject partialMockForObject:manager];
 	id mockStore = [OCMockObject mockForClass:[MPStore class]];
-	manager.store = mockStore;
+	testAdView.adManager.store = mockStore;
 	
 	[[mockManager expect] trackClick];
 	[[mockStore expect] initiatePurchaseForProductIdentifier:@"(id)" quantity:1];
@@ -406,10 +404,7 @@
 	[mockStore verify];
 }
 
--(void)testWebviewOnCustomHost {
-	MPAdManager *manager = [[MPAdManager alloc] initWithAdView:testAdView];
-	id mockManager = [OCMockObject partialMockForObject:manager];
-	
+-(void)testWebviewOnCustomHost {	
 	[[mockManager expect] trackClick];
 	[[[mockManager expect] andForwardToRealObject] customLinkClickedForSelectorString:@"(fnc)" withDataString:@"(data)"];
 	NSURLRequest *request = [[NSURLRequest alloc] initWithURL:
@@ -418,6 +413,17 @@
 	[mockManager webView:mockWebview shouldStartLoadWithRequest:request navigationType:0];
 	
 	[mockManager verify];
+}
+
+-(void)testMakeWebViewWithFrame {
+	CGRect frame = CGRectMake(10, 10, 10, 10);
+	UIWebView *webView = [mockManager makeAdWebViewWithFrame:frame];
+	
+	GHAssertEqualObjects(webView.backgroundColor, [UIColor clearColor],
+						 @"Webview background color should be clear");
+	GHAssertFalse(webView.opaque, @"Webview should be opaque");
+	GHAssertEquals(webView.frame, frame,
+						 @"Webview frame is not initialized property");
 }
 
 @end

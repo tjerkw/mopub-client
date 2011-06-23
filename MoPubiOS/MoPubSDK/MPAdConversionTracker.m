@@ -7,7 +7,9 @@
 //
 
 #import "MPAdConversionTracker.h"
-#import "MPAdView.h"
+#import "MPConstants.h"
+#import "MPGlobal.h"
+#import "MPLogging.h"
 
 @interface MPAdConversionTracker (Internal)
 - (void)reportApplicationOpenSynchronous:(NSString *)appID;
@@ -49,7 +51,7 @@
 	{
 		NSString *appOpenUrlString = [NSString stringWithFormat:@"http://%@/m/open?v=3&udid=%@&id=%@",
 									  HOSTNAME,
-									  [[UIDevice currentDevice] hashedMoPubUDID],
+									  hashedMoPubUDID(),
 									  appID 
 									  ];
 		MPLogInfo(@"Reporting application did launch for the first time to MoPub: %@", appOpenUrlString);

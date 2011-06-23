@@ -10,6 +10,7 @@
 #import "MPAdManager.h"
 #import "MPAdView.h"
 #import "MPLogging.h"
+#import "MPAdManager+MPAdaptersPrivate.h"
 
 @interface MPIAdAdapter ()
 + (ADBannerView *)sharedAdBannerView;
@@ -65,7 +66,7 @@
 		if ([_adBannerView isBannerLoaded])
 		{
 			MPLogInfo(@"iAd banner has previously loaded an ad, so just show it.");
-			[self.adManager.adView setAdContentView:_adBannerView];
+			[self.adManager setAdContentView:_adBannerView];
 			[self.adManager adapterDidFinishLoadingAd:self shouldTrackImpression:NO];
 		}
 	} 
@@ -163,7 +164,7 @@
 - (void)bannerViewDidLoadAd:(ADBannerView *)banner
 {
 	MPLogInfo(@"iAd has successfully loaded a new ad.");
-	[self.adManager.adView setAdContentView:_adBannerView];
+	[self.adManager setAdContentView:_adBannerView];
 	[self.adManager adapterDidFinishLoadingAd:self shouldTrackImpression:YES];
 }
 

@@ -7,6 +7,7 @@
 //
 
 #import "MPGlobal.h"
+#import <CommonCrypto/CommonDigest.h>
 
 CGRect MPScreenBounds()
 {
@@ -33,21 +34,43 @@ CGFloat MPDeviceScaleFactor()
 	else return 1.0;
 }
 
-
-NSString *userAgentString()
+NSString *hashedMoPubUDID()
 {
-	NSString *systemVersion = [[UIDevice currentDevice] systemVersion];
-	NSString *systemName = [[UIDevice currentDevice] systemName];
-	NSString *model = [[UIDevice currentDevice] model];
-	NSString *bundleName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
-	NSString *appVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
-	return [NSString stringWithFormat:
-			@"%@/%@ (%@; U; CPU %@ %@ like Mac OS X; %@)",
-			bundleName, 
-			appVersion, 
-			model,
-			systemName, 
-			systemVersion, 
-			[[NSLocale currentLocale] localeIdentifier]
-			];
+	NSString *result = nil;
+	NSString *udid = [NSString stringWithFormat:@"mopub-%@", 
+					  [[UIDevice currentDevice] uniqueIdentifier]];
+	
+	if (udid) 
+	{
+		unsigned char digest[16];
+		NSData *data = [udid dataUsingEncoding:NSASCIIStringEncoding];
+		CC_MD5([data bytes], [data length], digest);
+		
+		result = [NSString stringWithFormat:@"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+				  digest[0], digest[1], 
+				  digest[2], digest[3],
+				  digest[4], digest[5],
+				  digest[6], digest[7],
+				  digest[8], digest[9],
+				  digest[10], digest[11],
+				  digest[12], digest[13],
+				  digest[14], digest[15]];
+		result = [result uppercaseString];
+	}
+	return [NSString stringWithFormat:@"md5:%@", result];
 }
+
+@implementation NSString (MPAdditions)
+
+- (NSString *)URLEncodedString
+{
+	NSString *result = (NSString *)CFURLCreateStringByAddingPercentEscapes(
+																		   NULL,
+																		   (CFStringRef)self,
+																		   NULL,
+																		   (CFStringRef)@"!*'();:@&=+$,/?%#[]<>",
+																		   kCFStringEncodingUTF8);
+	return result;
+}
+
+@end

@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreLocation/CoreLocation.h>
 #import "MPBaseAdapter.h"
 #import "MPStore.h"
 #import "MPAdBrowserController.h"
@@ -15,6 +16,15 @@
 @class MPAdView, MPTimer, MPTimerTarget, MPBaseAdapter;
 
 @interface MPAdManager : NSObject <MPAdapterDelegate, MPAdBrowserControllerDelegate, UIWebViewDelegate> {
+	MPAdView *_adView;
+
+	// Ad unit identifier for the ad view.
+	NSString *_adUnitId;
+	
+	// Targeting parameters.
+	NSString *_keywords;
+	CLLocation *_location;
+	
 	// URL for initial MoPub ad request.
 	NSURL *_URL;
 
@@ -31,9 +41,7 @@
 	
 	// Pool of webviews being used as HTML ads.
 	NSMutableSet *_webviewPool;
-	
-	MPAdView *_adView;
-	
+		
 	// Current adapter being used for serving native ads.
 	MPBaseAdapter *_currentAdapter;
 	
@@ -73,37 +81,5 @@
 	// Handle to the shared store object that manages in-app purchases from ads.
 	MPStore *_store;
 }
-
-@property (nonatomic, retain) MPStore *store;
-@property (nonatomic, retain) NSMutableData *data;
-@property (nonatomic, retain) NSMutableSet *webviewPool;
-@property(nonatomic, copy) NSURL *URL;
-@property(nonatomic, retain) NSURLConnection *conn;
-@property(nonatomic, assign) MPAdView *adView;
-@property (nonatomic, copy) NSURL *clickURL;
-@property (nonatomic, copy) NSURL *interceptURL;
-@property (nonatomic, copy) NSURL *failURL;
-@property (nonatomic, copy) NSURL *impTrackerURL;
-@property (nonatomic, retain) MPTimer *autorefreshTimer;
-@property (nonatomic, retain) MPTimerTarget *timerTarget;
-@property (nonatomic, assign) BOOL ignoresAutorefresh;
-@property (nonatomic, assign) BOOL isLoading;
-
-
--(id)initWithAdView:(MPAdView *)adView;
-
-/*
- * Loads a new ad using the specified URL.
- */
-- (void)loadAdWithURL:(NSURL *)URL;
-
-/*
- * Signals to the ad view that a custom event has resulted in a failed load.
- * You must call this method if you implement custom events.
- */
-- (void)customEventDidFailToLoadAd;
-
-
-
 
 @end

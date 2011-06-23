@@ -10,6 +10,7 @@
 #import "CJSONDeserializer.h"
 #import "MPAdView.h"
 #import "MPLogging.h"
+#import "MPAdManager+MPAdaptersPrivate.h"
 
 #define MM_SIZE_320x53	CGSizeMake(320, 53)
 #define MM_SIZE_300x250 CGSizeMake(300, 250)
@@ -93,28 +94,28 @@
 
 - (void)adRequestSucceeded:(MMAdView *)adView
 {
-	[self.adView setAdContentView:adView];
-	[self.adView adapterDidFinishLoadingAd:self shouldTrackImpression:YES];
+	[self.adManager setAdContentView:adView];
+	[self.adManager adapterDidFinishLoadingAd:self shouldTrackImpression:YES];
 }
 
 - (void)adRequestFailed:(MMAdView *)adView
 {
-	[self.adView adapter:self didFailToLoadAdWithError:nil];
+	[self.adManager adapter:self didFailToLoadAdWithError:nil];
 }
 
 - (void)adWasTapped:(MMAdView *)adView
 {
-	[self.adView userActionWillBeginForAdapter:self];
+	[self.adManager userActionWillBeginForAdapter:self];
 }
 
 - (void)applicationWillTerminateFromAd
 {
-	[self.adView userWillLeaveApplicationFromAdapter:self];
+	[self.adManager userWillLeaveApplicationFromAdapter:self];
 }
 
 - (void)adModalWasDismissed
 {
-	[self.adView userActionDidEndForAdapter:self];
+	[self.adManager userActionDidEndForAdapter:self];
 }
 
 @end
