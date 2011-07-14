@@ -7,35 +7,35 @@
 //
 
 #import "MPAdView.h"
+#import "MPAdManager+MPAdViewFriend.h"
 #import <stdlib.h>
 #import <time.h>
-#import "MPAdView+MPAdManagerPrivate.h"
 
 static NSString * const kAdAnimationId = @"MPAdTransition";
 
-@interface MPAdView (Internal)
-static NSString * userAgentString;
-- (void)setScrollable:(BOOL)scrollable forView:(UIView *)view;
-- (void)animateTransitionToAdView:(UIView *)view;
-- (NSString *)userAgentString;
-@end
-
 @interface MPAdView ()
+
+static NSString * userAgentString;
+
 @property (nonatomic, retain) MPAdManager *adManager;
 @property (nonatomic, retain) UIView *adContentView;
 @property (nonatomic, assign) CGSize originalSize;
-@end
 
+- (void)setScrollable:(BOOL)scrollable forView:(UIView *)view;
+- (void)animateTransitionToAdView:(UIView *)view;
+- (void)backFillWithNothing;
+
+@end
 
 @implementation MPAdView
 
 @synthesize adManager = _adManager;
+@synthesize adUnitId = _adUnitId;
 @synthesize keywords = _keywords;
 @synthesize delegate = _delegate;
 @synthesize adContentView = _adContentView;
 @synthesize creativeSize = _creativeSize;
 @synthesize originalSize = _originalSize;
-@synthesize shouldInterceptLinks = _shouldInterceptLinks;
 @synthesize scrollable = _scrollable;
 @synthesize stretchesWebContentToFill = _stretchesWebContentToFill;
 @synthesize animationType = _animationType;
@@ -48,6 +48,7 @@ static NSString * userAgentString;
 	UIWebView *webview = [[UIWebView alloc] init];
 	userAgentString = [webview stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
 	[webview release];
+	
 	srandom(time(NULL));
 }
 
@@ -58,7 +59,6 @@ static NSString * userAgentString;
 	{	
 		self.backgroundColor = [UIColor clearColor];
 		self.clipsToBounds = YES;
-		_shouldInterceptLinks = YES;
 		_scrollable = NO;
 		_animationType = MPAdAnimationTypeNone;
 		_originalSize = size;
@@ -76,15 +76,31 @@ static NSString * userAgentString;
 	// If our content has a delegate, set its delegate to nil.
 	if ([_adContentView respondsToSelector:@selector(setDelegate:)])
 		[_adContentView performSelector:@selector(setDelegate:) withObject:nil];
+	
+	[_adUnitId release];
 	[_adContentView release];
+	
+	_adManager.adView = nil;
 	[_adManager release];
     [super dealloc];
 }
 
 #pragma mark -
 
--(void)setKeywords:(NSString *)keyword{
-	_adManager.keywords = keyword; 
+- (void)setAdUnitId:(NSString *)adUnitId {
+	if (_adUnitId != adUnitId) {
+		[_adUnitId release];
+		_adUnitId = [adUnitId copy];
+	}
+	_adManager.adUnitId = _adUnitId;
+}
+
+- (NSString *)keywords {
+	return _adManager.keywords;
+}
+
+- (void)setKeywords:(NSString *)keywords {
+	_adManager.keywords = keywords; 
 }
 
 - (void)setAdContentView:(UIView *)view
@@ -107,6 +123,30 @@ static NSString * userAgentString;
 	[self setScrollable:self.scrollable forView:view];
 	
 	[self animateTransitionToAdView:view];
+}
+
+- (void)setScrollable:(BOOL)scrollable forView:(UIView *)view
+{
+	// For webviews, find all subviews that are UIScrollViews or subclasses
+	// and set their scrolling and bounce.
+	if ([view isKindOfClass:[UIWebView class]])
+	{
+		UIScrollView *scrollView = nil;
+		for (UIView *v in view.subviews)
+		{
+			if ([v isKindOfClass:[UIScrollView class]])
+			{
+				scrollView = (UIScrollView *)v;
+				scrollView.scrollEnabled = scrollable;
+				scrollView.bounces = scrollable;
+			}
+		}
+	}
+	// For normal UIScrollView subclasses, use the provided setter.
+	else if ([view isKindOfClass:[UIScrollView class]])
+	{
+		[(UIScrollView *)view setScrollEnabled:scrollable];
+	}
 }
 
 - (void)animateTransitionToAdView:(UIView *)view
@@ -202,8 +242,7 @@ static NSString * userAgentString;
 
 - (void)rotateToOrientation:(UIInterfaceOrientation)newOrientation
 {
-	// Pass along this notification to the adapter, so that it can handle the orientation change.
-	[_adManager.currentAdapter rotateToOrientation:newOrientation];
+	[_adManager rotateToOrientation:newOrientation];
 }
 
 - (void)loadAd
@@ -241,48 +280,6 @@ static NSString * userAgentString;
 		[(UIWebView *)_adContentView stringByEvaluatingJavaScriptFromString:@"webviewDidAppear();"];
 }
 
-# pragma mark -
-# pragma mark Custom Events
-
-- (void)customEventDidLoadAd
-{
-	_adManager.isLoading = NO;
-	[_adManager trackImpression];
-}
-
-- (void)customEventDidFailToLoadAd
-{
-	_adManager.isLoading = NO;
-	[_adManager loadAdWithURL:_adManager.failURL];
-}
-
-#pragma mark -
-#pragma mark Internal
-
-- (void)setScrollable:(BOOL)scrollable forView:(UIView *)view
-{
-	// For webviews, find all subviews that are UIScrollViews or subclasses
-	// and set their scrolling and bounce.
-	if ([view isKindOfClass:[UIWebView class]])
-	{
-		UIScrollView *scrollView = nil;
-		for (UIView *v in view.subviews)
-		{
-			if ([v isKindOfClass:[UIScrollView class]])
-			{
-				scrollView = (UIScrollView *)v;
-				scrollView.scrollEnabled = scrollable;
-				scrollView.bounces = scrollable;
-			}
-		}
-	}
-	// For normal UIScrollView subclasses, use the provided setter.
-	else if ([view isKindOfClass:[UIScrollView class]])
-	{
-		[(UIScrollView *)view setScrollEnabled:scrollable];
-	}
-}
-
 - (void)backFillWithNothing
 {
 	// Make the ad view disappear.
@@ -292,6 +289,19 @@ static NSString * userAgentString;
 	// Notify delegate that the ad has failed to load.
 	if ([self.delegate respondsToSelector:@selector(adViewDidFailToLoadAd:)])
 		[self.delegate adViewDidFailToLoadAd:self];
+}
+
+# pragma mark -
+# pragma mark Custom Events
+
+- (void)customEventDidLoadAd
+{
+	[_adManager customEventDidLoadAd];
+}
+
+- (void)customEventDidFailToLoadAd
+{
+	[_adManager customEventDidFailToLoadAd];
 }
 
 @end

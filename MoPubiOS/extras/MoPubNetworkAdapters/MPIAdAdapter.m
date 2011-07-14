@@ -8,9 +8,8 @@
 
 #import "MPIAdAdapter.h"
 #import "MPAdManager.h"
-#import "MPAdView.h"
+#import "MPAdManager+MPBaseAdapterFriend.h"
 #import "MPLogging.h"
-#import "MPAdManager+MPAdaptersPrivate.h"
 
 @interface MPIAdAdapter ()
 + (ADBannerView *)sharedAdBannerView;
@@ -55,7 +54,7 @@
 		
 		_adBannerView = [[MPIAdAdapter sharedAdBannerView] retain];
 		
-		CGSize size = self.adManager.adView.bounds.size;
+		CGSize size = [self.adManager adContentViewSize];
 		_adBannerView.frame = (CGRect){{0, 0}, size};
 		_adBannerView.delegate = self;
 

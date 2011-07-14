@@ -33,12 +33,12 @@ typedef enum
 	id<MPAdViewDelegate> _delegate;
 	
 	MPAdManager *_adManager;
+	
+	// Ad unit identifier for the ad view.
+	NSString *_adUnitId;
 		
 	// Subview that represents the actual ad content. Set via -setAdContentView.
 	UIView *_adContentView;
-	
-	// Targeting parameters.
-	NSString *_keywords;
 	
 	// Stores the initial size of the ad view.
 	CGSize _originalSize;
@@ -46,9 +46,6 @@ typedef enum
 	// Stores the size of the ad creative (handed down from the server). If the server does not
 	// pass back size information, this value will be equal to _originalSize.
 	CGSize _creativeSize;
-	
-	// Whether we should intercept any sort of ad navigation.
-	BOOL _shouldInterceptLinks;
 	
 	// Whether scrolling is enabled for the ad view.
 	BOOL _scrollable;
@@ -63,9 +60,9 @@ typedef enum
 }
 
 @property (nonatomic, assign) id<MPAdViewDelegate> delegate;
+@property (nonatomic, copy) NSString *adUnitId;
 @property (nonatomic, retain) NSString *keywords;
 @property (nonatomic, assign) CGSize creativeSize;
-@property (nonatomic, assign) BOOL shouldInterceptLinks;
 @property (nonatomic, assign) BOOL scrollable;
 @property (nonatomic, assign) BOOL stretchesWebContentToFill;
 @property (nonatomic, assign) MPAdAnimationType animationType;

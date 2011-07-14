@@ -8,8 +8,8 @@
 
 #import "MPGoogleAdSenseAdapter.h"
 #import "CJSONDeserializer.h"
-#import "MPAdView.h"
 #import "MPLogging.h"
+#import "MPAdManager.h"
 #import "MPAdManager+MPAdaptersPrivate.h"
 
 static NSDictionary *GADHeaderAttrMap = nil;

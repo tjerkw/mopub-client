@@ -1,9 +1,9 @@
 //
-//  MPAdRequest.h
-//  MoPubTests
+//  MPAdManager.h
+//  MoPub
 //
 //  Created by Haydn Dufrene on 6/15/11.
-//  Copyright 2011 The Falco Initiative. All rights reserved.
+//  Copyright 2011 MoPub, Inc. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -60,6 +60,9 @@
 	
 	// Impression-tracking URL.
 	NSURL *_impTrackerURL;
+	
+	// Whether we should intercept any sort of ad navigation.
+	BOOL _shouldInterceptLinks;
 	
 	// Timer that sends a -forceRefreshAd message upon firing, with a time interval handed
 	// down from the server. You can set the desired interval for any ad unit using 

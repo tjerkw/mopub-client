@@ -18,6 +18,6 @@ NSString *hashedMoPubUDID();
 /* 
  * Returns string with reserved/unsafe characters encoded.
  */
--(NSString *) URLEncodedString;
+- (NSString *) URLEncodedString;
 
 @end

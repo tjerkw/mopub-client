@@ -1,20 +1,20 @@
 //
-//  MPAdRequest.m
-//  MoPubTests
+//  MPAdManager.m
+//  MoPub
 //
 //  Created by Haydn Dufrene on 6/15/11.
-//  Copyright 2011 The Falco Initiative. All rights reserved.
+//  Copyright 2011 MoPub, Inc. All rights reserved.
 //
 
 #import "MPAdManager.h"
-#import "MPConstants.h"
-#import "MPGlobal.h"
 #import "MPAdView.h"
+#import "MPAdView+MPAdManagerFriend.h"
 #import "MPTimer.h"
 #import "MPBaseAdapter.h"
 #import "MPAdapterMap.h"
+#import "MPConstants.h"
+#import "MPGlobal.h"
 #import "CJSONDeserializer.h"
-#import "MPAdView+MPAdManagerPrivate.h"
 
 static NSString * const kTimerNotificationName		= @"Autorefresh";
 static NSString * const kErrorDomain				= @"mopub.com";
@@ -45,27 +45,6 @@ static NSString * const kNetworkTypeHeaderKey		= @"X-Networktype";
 static NSString * const kAdTypeHtml					= @"html";
 static NSString * const kAdTypeClear				= @"clear";
 
-@interface MPAdManager (Internal)
-- (void)loadAdWithURL:(NSURL *)URL;
-- (void)forceRefreshAd;
-- (void)registerForApplicationStateTransitionNotifications;
-- (void)destroyWebviewPool;
-- (NSString *)orientationQueryStringComponent;
-- (NSString *)scaleFactorQueryStringComponent;
-- (NSString *)timeZoneQueryStringComponent;
-- (NSString *)locationQueryStringComponent;
-- (NSURLRequest *)serverRequestObjectForUrl:(NSURL *)URL;
-- (void)replaceCurrentAdapterWithAdapter:(MPBaseAdapter *)newAdapter;
-- (void)scheduleAutorefreshTimer;
-- (NSURL *)serverRequestUrl;
-- (UIWebView *)makeAdWebViewWithFrame:(CGRect)frame;
-- (void)trackClick;
-- (void)trackImpression;
-- (NSDictionary *)dictionaryFromQueryString:(NSString *)query;
-- (void)customLinkClickedForSelectorString:(NSString *)selectorString 
-							withDataString:(NSString *)dataString;
-@end
-
 @interface MPAdManager ()
 
 @property (nonatomic, assign) MPAdView *adView;
@@ -77,6 +56,7 @@ static NSString * const kAdTypeClear				= @"clear";
 @property (nonatomic, copy) NSURL *interceptURL;
 @property (nonatomic, copy) NSURL *failURL;
 @property (nonatomic, copy) NSURL *impTrackerURL;
+@property (nonatomic, assign) BOOL shouldInterceptLinks;
 @property (nonatomic, assign) BOOL isLoading;
 @property (nonatomic, assign) BOOL ignoresAutorefresh;
 @property (nonatomic, assign) BOOL adActionInProgress;
@@ -86,6 +66,27 @@ static NSString * const kAdTypeClear				= @"clear";
 @property (nonatomic, retain) NSMutableData *data;
 @property (nonatomic, retain) NSMutableSet *webviewPool;
 @property (nonatomic, retain) MPBaseAdapter *currentAdapter;
+
+- (void)loadAdWithURL:(NSURL *)URL;
+- (void)forceRefreshAd;
+- (void)registerForApplicationStateTransitionNotifications;
+- (void)destroyWebviewPool;
+- (NSString *)orientationQueryStringComponent;
+- (NSString *)scaleFactorQueryStringComponent;
+- (NSString *)timeZoneQueryStringComponent;
+- (NSString *)locationQueryStringComponent;
+- (NSURLRequest *)serverRequestObjectForUrl:(NSURL *)URL;
+- (void)replaceCurrentAdapterWithAdapter:(MPBaseAdapter *)newAdapter;
+- (void)scheduleAutorefreshTimer;
+- (NSURL *)serverRequestURL;
+- (UIWebView *)makeAdWebViewWithFrame:(CGRect)frame;
+- (void)trackClick;
+- (void)trackImpression;
+- (void)setAdContentView:(UIView *)view;
+- (void)rotateToOrientation:(UIInterfaceOrientation)orientation;
+- (NSDictionary *)dictionaryFromQueryString:(NSString *)query;
+- (void)customLinkClickedForSelectorString:(NSString *)selectorString 
+							withDataString:(NSString *)dataString;
 
 @end
 
@@ -100,6 +101,7 @@ static NSString * const kAdTypeClear				= @"clear";
 @synthesize interceptURL = _interceptURL;
 @synthesize failURL = _failURL;
 @synthesize impTrackerURL = _impTrackerURL;
+@synthesize shouldInterceptLinks = _shouldInterceptLinks;
 @synthesize autorefreshTimer = _autorefreshTimer;
 @synthesize isLoading = _isLoading;
 @synthesize adActionInProgress = _adActionInProgress;
@@ -110,11 +112,12 @@ static NSString * const kAdTypeClear				= @"clear";
 @synthesize webviewPool = _webviewPool;
 @synthesize currentAdapter = _currentAdapter;
 
--(id)initWithAdView:(MPAdView *)adView {
+- (id)initWithAdView:(MPAdView *)adView {
 	if (self = [super init]) {
 		_adView = adView;
 		_data = [[NSMutableData data] retain];
 		_webviewPool = [[NSMutableSet set] retain];
+		_shouldInterceptLinks = YES;
 		_isLoading = NO;
 		_ignoresAutorefresh = NO;
 		_store = [MPStore sharedStore];
@@ -126,6 +129,25 @@ static NSString * const kAdTypeClear				= @"clear";
 		[self registerForApplicationStateTransitionNotifications];
 	}
 	return self;
+}
+
+- (void)registerForApplicationStateTransitionNotifications
+{
+	// iOS version > 4.0: Register for relevant application state transition notifications.
+	if (&UIApplicationDidEnterBackgroundNotification != nil)
+	{
+		[[NSNotificationCenter defaultCenter] addObserver:self 
+												 selector:@selector(applicationDidEnterBackground) 
+													 name:UIApplicationDidEnterBackgroundNotification 
+												   object:[UIApplication sharedApplication]];
+	}		
+	if (&UIApplicationWillEnterForegroundNotification != nil)
+	{
+		[[NSNotificationCenter defaultCenter] addObserver:self 
+												 selector:@selector(applicationWillEnterForeground)
+													 name:UIApplicationWillEnterForegroundNotification 
+												   object:[UIApplication sharedApplication]];
+	}
 }
 
 - (void)dealloc 
@@ -167,25 +189,6 @@ static NSString * const kAdTypeClear				= @"clear";
 	[_webviewPool release];
 }
 
-- (void)registerForApplicationStateTransitionNotifications
-{
-	// iOS version > 4.0: Register for relevant application state transition notifications.
-	if (&UIApplicationDidEnterBackgroundNotification != nil)
-	{
-		[[NSNotificationCenter defaultCenter] addObserver:self 
-												 selector:@selector(applicationDidEnterBackground) 
-													 name:UIApplicationDidEnterBackgroundNotification 
-												   object:[UIApplication sharedApplication]];
-	}		
-	if (&UIApplicationWillEnterForegroundNotification !=  nil)
-	{
-		[[NSNotificationCenter defaultCenter] addObserver:self 
-												 selector:@selector(applicationWillEnterForeground)
-													 name:UIApplicationWillEnterForegroundNotification 
-												   object:[UIApplication sharedApplication]];
-	}
-}
-
 - (void)refreshAd
 {
 	[self.autorefreshTimer invalidate];
@@ -210,7 +213,7 @@ static NSString * const kAdTypeClear				= @"clear";
 		return;
 	}
 	
-	self.URL = (URL) ? URL : [self serverRequestUrl];
+	self.URL = (URL) ? URL : [self serverRequestURL];
 	MPLogDebug(@"Ad view (%p) loading ad with MoPub server URL: %@", self.adView, self.URL);
 	
 	NSURLRequest *request = [self serverRequestObjectForUrl:self.URL];
@@ -221,7 +224,7 @@ static NSString * const kAdTypeClear				= @"clear";
 	MPLogInfo(@"Ad manager (%p) fired initial ad request.", self);
 }
 
--(NSURL *)serverRequestUrl {
+- (NSURL *)serverRequestURL {
 	NSString *urlString = [NSString stringWithFormat:@"http://%@/m/ad?v=4&udid=%@&q=%@&id=%@", 
 						   HOSTNAME,
 						   hashedMoPubUDID(),
@@ -241,7 +244,7 @@ static NSString * const kAdTypeClear				= @"clear";
 {
 	UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
 	NSString *orientString = UIInterfaceOrientationIsPortrait(orientation) ?
-	kMoPubInterfaceOrientationPortraitId : kMoPubInterfaceOrientationLandscapeId;
+		kMoPubInterfaceOrientationPortraitId : kMoPubInterfaceOrientationLandscapeId;
 	return [NSString stringWithFormat:@"&o=%@", orientString];
 }
 
@@ -317,15 +320,32 @@ static NSString * const kAdTypeClear				= @"clear";
 
 - (void)setAdContentView:(UIView *)view
 {
-	[_adView setAdContentView:view];
+	[self.adView setAdContentView:view];
+}
+
+- (CGSize)adContentViewSize
+{
+	return [self.adView adContentViewSize];
+}
+
+- (void)rotateToOrientation:(UIInterfaceOrientation)orientation
+{
+	[self.currentAdapter rotateToOrientation:orientation];
+}
+
+- (void)customEventDidLoadAd
+{
+	_isLoading = NO;
+	[self trackImpression];
 }
 
 - (void)customEventDidFailToLoadAd {
-	[_adView customEventDidFailToLoadAd];
+	_isLoading = NO;
+	[self loadAdWithURL:self.failURL];
 }
 
 - (UIViewController *)viewControllerForPresentingModalView {
-	return [_adView.delegate viewControllerForPresentingModalView];
+	return [self.adView.delegate viewControllerForPresentingModalView];
 }
 
 - (void)customLinkClickedForSelectorString:(NSString *)selectorString 
@@ -340,9 +360,9 @@ static NSString * const kAdTypeClear				= @"clear";
 	SEL selector = NSSelectorFromString(selectorString);
 	
 	// First, try calling the no-object selector.
-	if ([_adView.delegate respondsToSelector:selector])
+	if ([self.adView.delegate respondsToSelector:selector])
 	{
-		[_adView.delegate performSelector:selector];
+		[self.adView.delegate performSelector:selector];
 	}
 	// Then, try calling the selector passing in the ad view.
 	else 
@@ -350,12 +370,12 @@ static NSString * const kAdTypeClear				= @"clear";
 		NSString *selectorWithObjectString = [NSString stringWithFormat:@"%@:", selectorString];
 		SEL selectorWithObject = NSSelectorFromString(selectorWithObjectString);
 		
-		if ([_adView.delegate respondsToSelector:selectorWithObject])
+		if ([self.adView.delegate respondsToSelector:selectorWithObject])
 		{
 			NSData *data = [dataString dataUsingEncoding:NSUTF8StringEncoding];
 			NSDictionary *dataDictionary = [[CJSONDeserializer deserializer] deserializeAsDictionary:data
 																							   error:NULL];
-			[_adView.delegate performSelector:selectorWithObject withObject:dataDictionary];
+			[self.adView.delegate performSelector:selectorWithObject withObject:dataDictionary];
 		}
 		else
 		{
@@ -377,8 +397,8 @@ static NSString * const kAdTypeClear				= @"clear";
 											  redirectURLString]];
 	
 	// Notify delegate that the ad browser is about to open.
-	if ([_adView.delegate respondsToSelector:@selector(willPresentModalViewForAd:)])
-		[_adView.delegate willPresentModalViewForAd:_adView];
+	if ([self.adView.delegate respondsToSelector:@selector(willPresentModalViewForAd:)])
+		[self.adView.delegate willPresentModalViewForAd:self.adView];
 	
 	if ([self.autorefreshTimer isScheduled])
 		[self.autorefreshTimer pause];
@@ -386,33 +406,32 @@ static NSString * const kAdTypeClear				= @"clear";
 	// Present ad browser.
 	MPAdBrowserController *browserController = [[MPAdBrowserController alloc] initWithURL:desiredURL 
 																				 delegate:self];
-	[[_adView.delegate viewControllerForPresentingModalView] presentModalViewController:browserController 			
-																			animated:YES];
+	[[self viewControllerForPresentingModalView] presentModalViewController:browserController 			
+																   animated:YES];
 	[browserController release];
 }
 
 #pragma mark -
 #pragma mark MPAdBrowserControllerDelegate
 
-- (void)dismissBrowserController:(MPAdBrowserController *)browserController{
+- (void)dismissBrowserController:(MPAdBrowserController *)browserController {
 	[self dismissBrowserController:browserController animated:YES];
 }
 
 - (void)dismissBrowserController:(MPAdBrowserController *)browserController animated:(BOOL)animated
 {
 	_adActionInProgress = NO;
-	[[_adView.delegate viewControllerForPresentingModalView] dismissModalViewControllerAnimated:animated];
+	[[self viewControllerForPresentingModalView] dismissModalViewControllerAnimated:animated];
 	
-	if ([_adView.delegate respondsToSelector:@selector(didDismissModalViewForAd:)])
-		[_adView.delegate didDismissModalViewForAd:_adView];
+	if ([self.adView.delegate respondsToSelector:@selector(didDismissModalViewForAd:)])
+		[self.adView.delegate didDismissModalViewForAd:self.adView];
 	
 	if (_autorefreshTimerNeedsScheduling)
 	{
 		[self.autorefreshTimer scheduleNow];
 		_autorefreshTimerNeedsScheduling = NO;
 	}
-	else if ([self.autorefreshTimer isScheduled])
-		[self.autorefreshTimer resume];
+	else if ([self.autorefreshTimer isScheduled]) [self.autorefreshTimer resume];
 }
 
 # pragma mark -
@@ -427,7 +446,7 @@ static NSString * const kAdTypeClear				= @"clear";
 		{
 			[connection cancel];
 			NSDictionary *errorInfo = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:
-																		  NSLocalizedString(@"Server returned status code %d",@""),
+																		  NSLocalizedString(@"Server returned status code %d", @""),
 																		  statusCode]
 																  forKey:NSLocalizedDescriptionKey];
 			NSError *statusError = [NSError errorWithDomain:@"mopub.com"
@@ -437,6 +456,15 @@ static NSString * const kAdTypeClear				= @"clear";
 			return;
 		}
 	}
+	
+	MPLogInfo(@"Ad view (%p) received valid response from MoPub server.", self);
+	
+	// Initialize data.
+	[_data setLength:0];
+	
+	if ([self.adView.delegate respondsToSelector:@selector(adView:didReceiveResponseParams:)])
+		[self.adView.delegate adView:self.adView
+			didReceiveResponseParams:[(NSHTTPURLResponse *)response allHeaderFields]];
 	
 	// Parse response headers, set relevant URLs and booleans.
 	NSDictionary *headers = [(NSHTTPURLResponse *)response allHeaderFields];
@@ -456,7 +484,7 @@ static NSString * const kAdTypeClear				= @"clear";
 	
 	NSString *shouldInterceptLinksString = [headers objectForKey:kInterceptLinksHeaderKey];
 	if (shouldInterceptLinksString)
-		self.adView.shouldInterceptLinks = [shouldInterceptLinksString boolValue];
+		self.shouldInterceptLinks = [shouldInterceptLinksString boolValue];
 	
 	NSString *scrollableString = [headers objectForKey:kScrollableHeaderKey];
 	if (scrollableString)
@@ -494,7 +522,7 @@ static NSString * const kAdTypeClear				= @"clear";
 								   objectForKey:kNetworkTypeHeaderKey];
 	if (networkTypeHeader && ![networkTypeHeader isEqualToString:@""])
 	{
-		MPLogInfo(@"Fetching Ad Network Type: %@",networkTypeHeader);
+		MPLogInfo(@"Fetching Ad Network Type: %@", networkTypeHeader);
 	}
 	
 	// Determine ad type.
@@ -512,7 +540,7 @@ static NSString * const kAdTypeClear				= @"clear";
 		MPLogInfo(@"*** CLEAR ***");
 		[connection cancel];
 		_isLoading = NO;
-		[_adView backFillWithNothing];
+		[self.adView backFillWithNothing];
 		[self scheduleAutorefreshTimer];
 		return;
 	}
@@ -565,7 +593,7 @@ static NSString * const kAdTypeClear				= @"clear";
 	
 	// If the initial request to MoPub fails, replace the current ad content with a blank.
 	_isLoading = NO;
-	[_adView backFillWithNothing];
+	[self.adView backFillWithNothing];
 	
 	// Retry in 60 seconds.
 	if (!self.autorefreshTimer || ![self.autorefreshTimer isValid])
@@ -628,8 +656,8 @@ static NSString * const kAdTypeClear				= @"clear";
 	if (shouldTrack) [self trackImpression];
 	[self scheduleAutorefreshTimer];
 	
-	if ([_adView.delegate respondsToSelector:@selector(adViewDidLoadAd:)])
-		[_adView.delegate adViewDidLoadAd:_adView];	
+	if ([self.adView.delegate respondsToSelector:@selector(adViewDidLoadAd:)])
+		[self.adView.delegate adViewDidLoadAd:self.adView];	
 }
 
 - (void)adapter:(MPBaseAdapter *)adapter didFailToLoadAdWithError:(NSError *)error
@@ -662,8 +690,8 @@ static NSString * const kAdTypeClear				= @"clear";
 		[self.autorefreshTimer pause];
 	
 	// Notify delegate that the ad will present a modal view / disrupt the app.
-	if ([_adView.delegate respondsToSelector:@selector(willPresentModalViewForAd:)])
-		[_adView.delegate willPresentModalViewForAd:_adView];	
+	if ([self.adView.delegate respondsToSelector:@selector(willPresentModalViewForAd:)])
+		[self.adView.delegate willPresentModalViewForAd:self.adView];	
 }
 
 - (void)userActionDidEndForAdapter:(MPBaseAdapter *)adapter
@@ -679,8 +707,8 @@ static NSString * const kAdTypeClear				= @"clear";
 		[self.autorefreshTimer resume];
 	
 	// Notify delegate that the ad's modal view was dismissed, returning focus to the app.
-	if ([_adView.delegate respondsToSelector:@selector(didDismissModalViewForAd:)])
-		[_adView.delegate didDismissModalViewForAd:_adView];	
+	if ([self.adView.delegate respondsToSelector:@selector(didDismissModalViewForAd:)])
+		[self.adView.delegate didDismissModalViewForAd:self.adView];	
 }
 
 - (void)userWillLeaveApplicationFromAdapter:(MPBaseAdapter *)adapter
@@ -713,7 +741,7 @@ static NSString * const kAdTypeClear				= @"clear";
 			
 			// Notify delegate that an ad has been loaded.
 			if ([self.adView.delegate respondsToSelector:@selector(adViewDidLoadAd:)]) 
-				[self.adView.delegate adViewDidLoadAd:_adView];
+				[self.adView.delegate adViewDidLoadAd:self.adView];
 		}
 		else if ([host isEqualToString:kMoPubFailLoadHost])
 		{
@@ -748,7 +776,7 @@ static NSString * const kAdTypeClear				= @"clear";
 	// Intercept non-click forms of navigation (e.g. "window.location = ...") if the target URL
 	// has the interceptURL prefix. Launch the ad browser.
 	if (navigationType == UIWebViewNavigationTypeOther && 
-		_adView.shouldInterceptLinks && 
+		self.shouldInterceptLinks && 
 		self.interceptURL &&
 		[[URL absoluteString] hasPrefix:[self.interceptURL absoluteString]])
 	{
@@ -757,7 +785,7 @@ static NSString * const kAdTypeClear				= @"clear";
 	}
 	
 	// Launch the ad browser for all clicks (if shouldInterceptLinks is YES).
-	if (navigationType == UIWebViewNavigationTypeLinkClicked && _adView.shouldInterceptLinks)
+	if (navigationType == UIWebViewNavigationTypeLinkClicked && self.shouldInterceptLinks)
 	{
 		[self adLinkClicked:URL];
 		return NO;
@@ -778,7 +806,7 @@ static NSString * const kAdTypeClear				= @"clear";
 }
 
 # pragma mark -
-# pragma UIApplicationNotification responders
+# pragma mark UIApplicationNotification responders
 
 - (void)applicationDidEnterBackground
 {

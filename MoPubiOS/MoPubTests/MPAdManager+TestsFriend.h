@@ -1,19 +1,12 @@
 //
-//  MPAdManager+MPAdView+TestsPrivate.h
-//  MoPubTests
+//  MPAdManager+TestsFriend.h
+//  MoPub
 //
-//  Created by Haydn Dufrene on 6/22/11.
-//  Copyright 2011 Mopub/Stanford. All rights reserved.
+//  Created by Andrew He on 7/13/11.
+//  Copyright 2011 MoPub, Inc. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "MPAdManager.h"
-#import "MPAdView.h"
-
-@interface MPAdView (MPAdTestsPrivate)
-@property (nonatomic, retain) MPAdManager *adManager;
-@property (nonatomic, assign) CGSize originalSize;
-@end
 
 @interface MPAdManager (MPAdTestsPrivate)
 static NSString * const kTimerNotificationName		= @"Autorefresh";

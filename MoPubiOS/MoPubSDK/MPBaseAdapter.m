@@ -16,9 +16,9 @@
 
 - (id)initWithAdManager:(MPAdManager *)adManager
 {
-	if (self = [super init])
-		
+	if (self = [super init]) {
 		_adManager = adManager;
+	}
 	return self;
 }
 

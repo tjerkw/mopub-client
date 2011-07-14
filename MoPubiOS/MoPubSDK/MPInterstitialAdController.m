@@ -9,7 +9,8 @@
 #import "MPInterstitialAdController.h"
 #import "MPBaseInterstitialAdapter.h"
 #import "MPAdapterMap.h"
-#import "MPAdManager+MPAdView+InterstitialPrivate.h"
+#import "MPAdView+MPInterstitialAdControllerFriend.h"
+#import "MPAdManager+MPInterstitialAdControllerFriend.h"
 
 static const CGFloat kCloseButtonPadding				= 6.0;
 static NSString * const kCloseButtonXImageName			= @"MPCloseButtonX.png";

@@ -10,7 +10,7 @@
 #import "CJSONDeserializer.h"
 #import "MPAdView.h"
 #import "MPLogging.h"
-#import "MPAdManager+MPAdaptersPrivate.h"
+#import "MPAdManager+MPBaseAdapterFriend.h"
 
 #define MM_SIZE_320x53	CGSizeMake(320, 53)
 #define MM_SIZE_300x250 CGSizeMake(300, 250)
