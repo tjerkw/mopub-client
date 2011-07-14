@@ -16,34 +16,32 @@
 #import "MPGlobal.h"
 #import "CJSONDeserializer.h"
 
-static NSString * const kTimerNotificationName		= @"Autorefresh";
-static NSString * const kErrorDomain				= @"mopub.com";
-static NSString * const kMoPubUrlScheme				= @"mopub";
-static NSString * const kMoPubCloseHost				= @"close";
-static NSString * const kMoPubFinishLoadHost		= @"finishLoad";
-static NSString * const kMoPubFailLoadHost			= @"failLoad";
-static NSString * const kMoPubInAppHost				= @"inapp";
-static NSString * const kMoPubCustomHost			= @"custom";
-static NSString * const kMoPubInterfaceOrientationPortraitId	= @"p";
-static NSString * const kMoPubInterfaceOrientationLandscapeId	= @"l";
-static const CGFloat kMoPubRequestTimeoutInterval	= 10.0;
-static const CGFloat kMoPubRequestRetryInterval     = 60.0;
-
-// Ad header key/value constants.
-static NSString * const kClickthroughHeaderKey		= @"X-Clickthrough";
-static NSString * const kLaunchpageHeaderKey		= @"X-Launchpage";
-static NSString * const kFailUrlHeaderKey			= @"X-Failurl";
-static NSString * const kImpressionTrackerHeaderKey	= @"X-Imptracker";
-static NSString * const kInterceptLinksHeaderKey	= @"X-Interceptlinks";
-static NSString * const kScrollableHeaderKey		= @"X-Scrollable";
-static NSString * const kWidthHeaderKey				= @"X-Width";
-static NSString * const kHeightHeaderKey			= @"X-Height";
-static NSString * const kRefreshTimeHeaderKey		= @"X-Refreshtime";
-static NSString * const kAnimationHeaderKey			= @"X-Animation";
-static NSString * const kAdTypeHeaderKey			= @"X-Adtype";
-static NSString * const kNetworkTypeHeaderKey		= @"X-Networktype";
-static NSString * const kAdTypeHtml					= @"html";
-static NSString * const kAdTypeClear				= @"clear";
+NSString * const kTimerNotificationName = @"Autorefresh";
+NSString * const kErrorDomain = @"mopub.com";
+NSString * const kMoPubUrlScheme = @"mopub";
+NSString * const kMoPubCloseHost = @"close";
+NSString * const kMoPubFinishLoadHost = @"finishLoad";
+NSString * const kMoPubFailLoadHost = @"failLoad";
+NSString * const kMoPubInAppHost = @"inapp";
+NSString * const kMoPubCustomHost = @"custom";
+NSString * const kMoPubInterfaceOrientationPortraitId = @"p";
+NSString * const kMoPubInterfaceOrientationLandscapeId = @"l";
+const CGFloat kMoPubRequestTimeoutInterval = 10.0;
+const CGFloat kMoPubRequestRetryInterval = 60.0;
+NSString * const kClickthroughHeaderKey = @"X-Clickthrough";
+NSString * const kLaunchpageHeaderKey = @"X-Launchpage";
+NSString * const kFailUrlHeaderKey = @"X-Failurl";
+NSString * const kImpressionTrackerHeaderKey = @"X-Imptracker";
+NSString * const kInterceptLinksHeaderKey = @"X-Interceptlinks";
+NSString * const kScrollableHeaderKey = @"X-Scrollable";
+NSString * const kWidthHeaderKey = @"X-Width";
+NSString * const kHeightHeaderKey = @"X-Height";
+NSString * const kRefreshTimeHeaderKey = @"X-Refreshtime";
+NSString * const kAnimationHeaderKey = @"X-Animation";
+NSString * const kAdTypeHeaderKey = @"X-Adtype";
+NSString * const kNetworkTypeHeaderKey = @"X-Networktype";
+NSString * const kAdTypeHtml = @"html";
+NSString * const kAdTypeClear = @"clear";
 
 @interface MPAdManager ()
 

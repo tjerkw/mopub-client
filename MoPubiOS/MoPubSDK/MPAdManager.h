@@ -12,6 +12,33 @@
 #import "MPStore.h"
 #import "MPAdBrowserController.h"
 
+extern NSString * const kTimerNotificationName;
+extern NSString * const kErrorDomain;
+extern NSString * const kMoPubUrlScheme;
+extern NSString * const kMoPubCloseHost;
+extern NSString * const kMoPubFinishLoadHost;
+extern NSString * const kMoPubFailLoadHost;
+extern NSString * const kMoPubInAppHost;			
+extern NSString * const kMoPubCustomHost;
+extern NSString * const kMoPubInterfaceOrientationPortraitId;
+extern NSString * const kMoPubInterfaceOrientationLandscapeId;
+extern const CGFloat kMoPubRequestTimeoutInterval;
+extern const CGFloat kMoPubRequestRetryInterval;
+extern NSString * const kClickthroughHeaderKey;
+extern NSString * const kLaunchpageHeaderKey;
+extern NSString * const kFailUrlHeaderKey;
+extern NSString * const kImpressionTrackerHeaderKey;
+extern NSString * const kInterceptLinksHeaderKey;
+extern NSString * const kScrollableHeaderKey;
+extern NSString * const kWidthHeaderKey;			
+extern NSString * const kHeightHeaderKey;
+extern NSString * const kRefreshTimeHeaderKey;
+extern NSString * const kAnimationHeaderKey;
+extern NSString * const kAdTypeHeaderKey;
+extern NSString * const kNetworkTypeHeaderKey;
+extern NSString * const kAdTypeHtml;
+extern NSString * const kAdTypeClear;
+
 @protocol MPAdapterDelegate;
 @class MPAdView, MPTimer, MPTimerTarget, MPBaseAdapter;
 
