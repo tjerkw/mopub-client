@@ -50,7 +50,6 @@ extern NSString * const kAdTypeClear;
 	
 	// Targeting parameters.
 	NSString *_keywords;
-	CLLocation *_location;
 	
 	// URL for initial MoPub ad request.
 	NSURL *_URL;

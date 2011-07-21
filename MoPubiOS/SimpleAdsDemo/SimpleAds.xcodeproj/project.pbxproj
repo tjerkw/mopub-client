@@ -140,17 +140,17 @@
 		A7424EE31381909900FED855 /* MPBaseInterstitialAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPBaseInterstitialAdapter.m; sourceTree = "<group>"; };
 		A77155311373282E00069B34 /* MPGlobal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPGlobal.h; sourceTree = "<group>"; };
 		A77155321373282E00069B34 /* MPGlobal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPGlobal.m; sourceTree = "<group>"; };
-		A7876EF313CE59D900DAC9CB /* MPAdManager+MPAdViewFriend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MPAdManager+MPAdViewFriend.h"; sourceTree = "<group>"; };
-		A7876EF413CE59D900DAC9CB /* MPAdManager+MPBaseAdapterFriend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MPAdManager+MPBaseAdapterFriend.h"; sourceTree = "<group>"; };
-		A7876EF513CE59D900DAC9CB /* MPAdManager+MPInterstitialAdControllerFriend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MPAdManager+MPInterstitialAdControllerFriend.h"; sourceTree = "<group>"; };
-		A7876EF613CE59D900DAC9CB /* MPAdView+MPAdManagerFriend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MPAdView+MPAdManagerFriend.h"; sourceTree = "<group>"; };
-		A7876EF713CE59D900DAC9CB /* MPAdView+MPInterstitialAdControllerFriend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MPAdView+MPInterstitialAdControllerFriend.h"; sourceTree = "<group>"; };
 		A7936B2D1381A0F0002E21AB /* MPInterstitialAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPInterstitialAdapter.h; sourceTree = "<group>"; };
 		A7936B2E1381A0F0002E21AB /* MPInterstitialAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPInterstitialAdapter.m; sourceTree = "<group>"; };
 		A7F12BB31373689E008ECC4E /* MPCloseButtonX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MPCloseButtonX.png; sourceTree = "<group>"; };
 		A7F12BB41373689E008ECC4E /* MPCloseButtonX@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "MPCloseButtonX@2x.png"; sourceTree = "<group>"; };
 		A8065E891326769E00C147DC /* MPTimer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPTimer.h; sourceTree = "<group>"; };
 		A8065E8A1326769E00C147DC /* MPTimer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPTimer.m; sourceTree = "<group>"; };
+		B9DA988013D7595200DB132F /* MPAdManager+MPAdViewFriend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MPAdManager+MPAdViewFriend.h"; path = "Friend Categories/MPAdManager+MPAdViewFriend.h"; sourceTree = "<group>"; };
+		B9DA988113D7595200DB132F /* MPAdManager+MPBaseAdapterFriend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MPAdManager+MPBaseAdapterFriend.h"; path = "Friend Categories/MPAdManager+MPBaseAdapterFriend.h"; sourceTree = "<group>"; };
+		B9DA988213D7595200DB132F /* MPAdManager+MPInterstitialAdControllerFriend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MPAdManager+MPInterstitialAdControllerFriend.h"; path = "Friend Categories/MPAdManager+MPInterstitialAdControllerFriend.h"; sourceTree = "<group>"; };
+		B9DA988313D7595200DB132F /* MPAdView+MPAdManagerFriend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MPAdView+MPAdManagerFriend.h"; path = "Friend Categories/MPAdView+MPAdManagerFriend.h"; sourceTree = "<group>"; };
+		B9DA988413D7595200DB132F /* MPAdView+MPInterstitialAdControllerFriend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MPAdView+MPInterstitialAdControllerFriend.h"; path = "Friend Categories/MPAdView+MPInterstitialAdControllerFriend.h"; sourceTree = "<group>"; };
 		B9DD97C513B2C25D001559F7 /* MPAdManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MPAdManager.h; sourceTree = "<group>"; };
 		B9DD97C613B2C25D001559F7 /* MPAdManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MPAdManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -367,11 +367,11 @@
 		A7876EF113CE59C200DAC9CB /* Friend Categories */ = {
 			isa = PBXGroup;
 			children = (
-				A7876EF313CE59D900DAC9CB /* MPAdManager+MPAdViewFriend.h */,
-				A7876EF413CE59D900DAC9CB /* MPAdManager+MPBaseAdapterFriend.h */,
-				A7876EF513CE59D900DAC9CB /* MPAdManager+MPInterstitialAdControllerFriend.h */,
-				A7876EF613CE59D900DAC9CB /* MPAdView+MPAdManagerFriend.h */,
-				A7876EF713CE59D900DAC9CB /* MPAdView+MPInterstitialAdControllerFriend.h */,
+				B9DA988013D7595200DB132F /* MPAdManager+MPAdViewFriend.h */,
+				B9DA988113D7595200DB132F /* MPAdManager+MPBaseAdapterFriend.h */,
+				B9DA988213D7595200DB132F /* MPAdManager+MPInterstitialAdControllerFriend.h */,
+				B9DA988313D7595200DB132F /* MPAdView+MPAdManagerFriend.h */,
+				B9DA988413D7595200DB132F /* MPAdView+MPInterstitialAdControllerFriend.h */,
 			);
 			name = "Friend Categories";
 			sourceTree = "<group>";
@@ -529,13 +529,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Haydn Dufrene (UA7JL2S8AA)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				PREBINDING = NO;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C68FCDD4-E186-495C-9D48-1E3F58E50FC0";
 				SDKROOT = iphoneos;
 			};
 			name = Distribution;
@@ -563,14 +563,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Haydn Dufrene (UA7JL2S8AA)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				OTHER_CFLAGS = "";
 				PREBINDING = NO;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C68FCDD4-E186-495C-9D48-1E3F58E50FC0";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -579,13 +579,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Haydn Dufrene (UA7JL2S8AA)";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 3.1;
 				PREBINDING = NO;
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "C68FCDD4-E186-495C-9D48-1E3F58E50FC0";
 				SDKROOT = iphoneos;
 			};
 			name = Release;

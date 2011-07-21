@@ -34,6 +34,8 @@ typedef enum
 	
 	MPAdManager *_adManager;
 	
+	CLLocation *_location;
+	
 	// Ad unit identifier for the ad view.
 	NSString *_adUnitId;
 		
@@ -66,6 +68,7 @@ typedef enum
 @property (nonatomic, assign) BOOL scrollable;
 @property (nonatomic, assign) BOOL stretchesWebContentToFill;
 @property (nonatomic, assign) MPAdAnimationType animationType;
+@property (nonatomic, retain) CLLocation *location;
 
 /*
  * Returns an MPAdView with the given ad unit ID.
@@ -185,5 +188,18 @@ typedef enum
  * method should remove the ad view from the screen (see MPInterstitialAdController for an example).
  */
 - (void)adViewShouldClose:(MPAdView *)view;
+
+/*
+ * This method should be implemented if you wish to limit the precision of the geographical
+ * coordinates sent to the MoPub server. Return the number of digits after the decimal place
+ * you wish us to use. Default precision is 
+ */
+- (int)geoLocationPrecision;
+
+/*
+ * You should implement this method and return NO if you desire not to send the geographical
+ * coordinates to the MoPub server. If this is not implemented, default is YES.
+ */
+- (BOOL)enableGeoLocation;
 
 @end

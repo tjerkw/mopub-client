@@ -92,7 +92,6 @@ NSString * const kAdTypeClear = @"clear";
 
 @synthesize adView = _adView;
 @synthesize adUnitId = _adUnitId;
-@synthesize location = _location;
 @synthesize keywords = _keywords;
 @synthesize URL = _URL;
 @synthesize clickURL = _clickURL;
@@ -168,7 +167,6 @@ NSString * const kAdTypeClear = @"clear";
 	[_failURL release];
 	[_impTrackerURL release];
 	[_keywords release];
-	[_location release];
 	[_autorefreshTimer invalidate];
 	[_autorefreshTimer release];
 	[_timerTarget release];
@@ -266,12 +264,25 @@ NSString * const kAdTypeClear = @"clear";
 - (NSString *)locationQueryStringComponent
 {
 	NSString *result = @"";
-	if (_location)
-	{
+	if ([_adView.delegate respondsToSelector:@selector(geolocationEnabled)]) {
+		if (![_adView.delegate geolocationEnabled]) {
+			return result;
+		}
+	}
+	if (_adView.location)
+	{	
+		float lat = _adView.location.coordinate.latitude;
+		float lon = _adView.location.coordinate.longitude;
+		if ([_adView.delegate respondsToSelector:@selector(geoLocationPrecision)]) {
+			NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+			[formatter setMaximumFractionDigits:[_adView.delegate geoLocationPrecision]];
+			result = [result stringByAppendingFormat:
+					  @"&ll=%@,%@",
+					  [formatter stringFromNumber:[NSNumber numberWithFloat:lat]],
+					  [formatter stringFromNumber:[NSNumber numberWithFloat:lon]]];
+		}
 		result = [result stringByAppendingFormat:
-				  @"&ll=%f,%f",
-				  _location.coordinate.latitude,
-				  _location.coordinate.longitude];
+				  @"&ll=%f,%f", lat, lon];
 	}
 	return result;
 }

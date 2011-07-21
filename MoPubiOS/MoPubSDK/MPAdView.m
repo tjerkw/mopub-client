@@ -28,7 +28,7 @@ static NSString * userAgentString;
 @end
 
 @implementation MPAdView
-
+@synthesize location = _location;
 @synthesize adManager = _adManager;
 @synthesize adUnitId = _adUnitId;
 @synthesize keywords = _keywords;
@@ -82,6 +82,7 @@ static NSString * userAgentString;
 	
 	_adManager.adView = nil;
 	[_adManager release];
+	[_location release];
     [super dealloc];
 }
 
