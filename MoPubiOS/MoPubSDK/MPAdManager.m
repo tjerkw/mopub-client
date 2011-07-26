@@ -297,7 +297,7 @@ NSString * const kAdTypeClear = @"clear";
 									 timeoutInterval:kMoPubRequestTimeoutInterval] autorelease];
 	
 	// Set the user agent so that we know where the request is coming from (for targeting).
-	[request setValue:userAgentString forHTTPHeaderField:@"User-Agent"];			
+	[request setValue:userAgentString() forHTTPHeaderField:@"User-Agent"];			
 	
 	return request;
 }
