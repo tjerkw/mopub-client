@@ -14,4 +14,3 @@
 @property (nonatomic, retain) MPAdManager *adManager;
 
 @end
-

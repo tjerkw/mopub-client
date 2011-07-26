@@ -79,7 +79,7 @@
 	NSString *receiptString = [[[NSString alloc] initWithData:transaction.transactionReceipt 
 													 encoding:NSUTF8StringEncoding] autorelease];
 	NSString *postBody = [NSString stringWithFormat:@"udid=%@&receipt=%@", 
-						  hashedMoPubUDID(),
+						  MPHashedUDID(),
 						  [receiptString URLEncodedString]];
 	NSString *msgLength = [NSString stringWithFormat:@"%d", [postBody length]];
 	[request addValue:msgLength forHTTPHeaderField:@"Content-Length"];

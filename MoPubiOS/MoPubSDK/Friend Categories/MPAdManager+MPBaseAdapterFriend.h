@@ -9,9 +9,12 @@
 #import "MPAdManager.h"
 
 @interface MPAdManager (MPBaseAdapterFriend)
+
 @property (nonatomic, retain) MPAdView *adView;
+
 - (void)setAdContentView:(UIView *)view;
 - (CGSize)adContentViewSize;
 - (void)customEventDidFailToLoadAd;
 - (UIViewController *)viewControllerForPresentingModalView;
+
 @end

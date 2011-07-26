@@ -222,7 +222,7 @@ NSString * const kAdTypeClear = @"clear";
 - (NSURL *)serverRequestURL {
 	NSString *urlString = [NSString stringWithFormat:@"http://%@/m/ad?v=4&udid=%@&q=%@&id=%@", 
 						   HOSTNAME,
-						   hashedMoPubUDID(),
+						   MPHashedUDID(),
 						   [_keywords stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
 						   [_adUnitId stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]
 						   ];
@@ -297,7 +297,7 @@ NSString * const kAdTypeClear = @"clear";
 									 timeoutInterval:kMoPubRequestTimeoutInterval] autorelease];
 	
 	// Set the user agent so that we know where the request is coming from (for targeting).
-	[request setValue:userAgentString() forHTTPHeaderField:@"User-Agent"];			
+	[request setValue:MPUserAgentString() forHTTPHeaderField:@"User-Agent"];			
 	
 	return request;
 }

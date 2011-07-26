@@ -9,9 +9,6 @@
 #import "MPGlobal.h"
 #import <CommonCrypto/CommonDigest.h>
 
-static NSString *hashedUDID;
-static NSString *userAgent;
-
 CGRect MPScreenBounds()
 {
 	CGRect bounds = [UIScreen mainScreen].bounds;
@@ -38,8 +35,10 @@ CGFloat MPDeviceScaleFactor()
 }
 
 
-NSString *hashedMoPubUDID()
+NSString *MPHashedUDID()
 {
+	static NSString *hashedUDID = nil;
+	
     if (!hashedUDID) {
         NSString *result = nil;
         NSString *udid = [NSString stringWithFormat:@"mopub-%@", 
@@ -68,12 +67,14 @@ NSString *hashedMoPubUDID()
     return hashedUDID;
 }
 
-NSString *userAgentString() {
+NSString *MPUserAgentString()
+{
+	static NSString *userAgent = nil;
+	
     if (!userAgent) {
         UIWebView *webview = [[UIWebView alloc] init];
-        userAgent = [webview stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];  
+        userAgent = [[webview stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"] copy];  
         [webview release];
-        [userAgent retain];
     }
     return userAgent;
 }
@@ -82,13 +83,12 @@ NSString *userAgentString() {
 
 - (NSString *)URLEncodedString
 {
-	NSString *result = (NSString *)CFURLCreateStringByAddingPercentEscapes(
-																		   NULL,
+	NSString *result = (NSString *)CFURLCreateStringByAddingPercentEscapes(NULL,
 																		   (CFStringRef)self,
 																		   NULL,
 																		   (CFStringRef)@"!*'();:@&=+$,/?%#[]<>",
 																		   kCFStringEncodingUTF8);
-	return result;
+	return [result autorelease];
 }
 
 @end
