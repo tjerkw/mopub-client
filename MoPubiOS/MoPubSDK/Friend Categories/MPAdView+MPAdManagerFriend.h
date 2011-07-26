@@ -11,8 +11,6 @@
 
 @interface MPAdView (MPAdManagerFriend)
 
-static NSString * userAgentString;
-
 @property (nonatomic, retain) MPAdManager *adManager;
 @property (nonatomic, retain) UIView *adContentView;
 @property (nonatomic, assign) CGSize originalSize;

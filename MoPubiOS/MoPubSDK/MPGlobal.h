@@ -12,6 +12,7 @@
 CGRect MPScreenBounds();
 CGFloat MPDeviceScaleFactor();
 NSString *hashedMoPubUDID();
+NSString *userAgentString();
 
 @interface NSString (MPAdditions)
 

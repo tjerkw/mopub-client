@@ -194,12 +194,12 @@ typedef enum
  * coordinates sent to the MoPub server. Return the number of digits after the decimal place
  * you wish us to use. Default precision is 
  */
-- (int)geoLocationPrecision;
+- (int)geolocationPrecision;
 
 /*
  * You should implement this method and return NO if you desire not to send the geographical
  * coordinates to the MoPub server. If this is not implemented, default is YES.
  */
-- (BOOL)enableGeoLocation;
+- (BOOL)geolocationEnabled;
 
 @end

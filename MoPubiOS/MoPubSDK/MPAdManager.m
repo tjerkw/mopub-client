@@ -47,7 +47,6 @@ NSString * const kAdTypeClear = @"clear";
 
 @property (nonatomic, assign) MPAdView *adView;
 @property (nonatomic, copy) NSString *adUnitId;
-@property (nonatomic, retain) CLLocation *location;
 @property (nonatomic, copy) NSString *keywords;
 @property (nonatomic, copy) NSURL *URL;
 @property (nonatomic, copy) NSURL *clickURL;
@@ -275,7 +274,7 @@ NSString * const kAdTypeClear = @"clear";
 		float lon = _adView.location.coordinate.longitude;
 		if ([_adView.delegate respondsToSelector:@selector(geoLocationPrecision)]) {
 			NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
-			[formatter setMaximumFractionDigits:[_adView.delegate geoLocationPrecision]];
+			[formatter setMaximumFractionDigits:[_adView.delegate geolocationPrecision]];
 			result = [result stringByAppendingFormat:
 					  @"&ll=%@,%@",
 					  [formatter stringFromNumber:[NSNumber numberWithFloat:lat]],
@@ -294,7 +293,7 @@ NSString * const kAdTypeClear = @"clear";
 									 timeoutInterval:kMoPubRequestTimeoutInterval] autorelease];
 	
 	// Set the user agent so that we know where the request is coming from (for targeting).
-	[request setValue:userAgentString forHTTPHeaderField:@"User-Agent"];			
+	[request setValue:userAgentString() forHTTPHeaderField:@"User-Agent"];			
 	
 	return request;
 }

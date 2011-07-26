@@ -9,6 +9,9 @@
 #import "MPGlobal.h"
 #import <CommonCrypto/CommonDigest.h>
 
+static NSString *hashedUDID;
+static NSString *userAgent;
+
 CGRect MPScreenBounds()
 {
 	CGRect bounds = [UIScreen mainScreen].bounds;
@@ -34,30 +37,45 @@ CGFloat MPDeviceScaleFactor()
 	else return 1.0;
 }
 
+
 NSString *hashedMoPubUDID()
 {
-	NSString *result = nil;
-	NSString *udid = [NSString stringWithFormat:@"mopub-%@", 
-					  [[UIDevice currentDevice] uniqueIdentifier]];
-	
-	if (udid) 
-	{
-		unsigned char digest[16];
-		NSData *data = [udid dataUsingEncoding:NSASCIIStringEncoding];
-		CC_MD5([data bytes], [data length], digest);
-		
-		result = [NSString stringWithFormat:@"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
-				  digest[0], digest[1], 
-				  digest[2], digest[3],
-				  digest[4], digest[5],
-				  digest[6], digest[7],
-				  digest[8], digest[9],
-				  digest[10], digest[11],
-				  digest[12], digest[13],
-				  digest[14], digest[15]];
-		result = [result uppercaseString];
-	}
-	return [NSString stringWithFormat:@"md5:%@", result];
+    if (!hashedUDID) {
+        NSString *result = nil;
+        NSString *udid = [NSString stringWithFormat:@"mopub-%@", 
+                          [[UIDevice currentDevice] uniqueIdentifier]];
+
+        if (udid) 
+        {
+            unsigned char digest[16];
+            NSData *data = [udid dataUsingEncoding:NSASCIIStringEncoding];
+            CC_MD5([data bytes], [data length], digest);
+            
+            result = [NSString stringWithFormat:@"%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+                      digest[0], digest[1], 
+                      digest[2], digest[3],
+                      digest[4], digest[5],
+                      digest[6], digest[7],
+                      digest[8], digest[9],
+                      digest[10], digest[11],
+                      digest[12], digest[13],
+                      digest[14], digest[15]];
+            result = [result uppercaseString];
+        }
+        hashedUDID = [NSString stringWithFormat:@"md5:%@", result];
+        [hashedUDID retain];
+    }
+    return hashedUDID;
+}
+
+NSString *userAgentString() {
+    if (!userAgent) {
+        UIWebView *webview = [[UIWebView alloc] init];
+        userAgent = [webview stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];  
+        [webview release];
+        [userAgent retain];
+    }
+    return userAgent;
 }
 
 @implementation NSString (MPAdditions)

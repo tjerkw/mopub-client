@@ -15,8 +15,6 @@ static NSString * const kAdAnimationId = @"MPAdTransition";
 
 @interface MPAdView ()
 
-static NSString * userAgentString;
-
 @property (nonatomic, retain) MPAdManager *adManager;
 @property (nonatomic, retain) UIView *adContentView;
 @property (nonatomic, assign) CGSize originalSize;
@@ -24,6 +22,8 @@ static NSString * userAgentString;
 - (void)setScrollable:(BOOL)scrollable forView:(UIView *)view;
 - (void)animateTransitionToAdView:(UIView *)view;
 - (void)backFillWithNothing;
+- (void)animationDidStop:(NSString *)animationID finished:(NSNumber *)finished 
+				 context:(void *)context;
 
 @end
 
@@ -45,10 +45,6 @@ static NSString * userAgentString;
 
 + (void)initialize
 {
-	UIWebView *webview = [[UIWebView alloc] init];
-	userAgentString = [webview stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
-	[webview release];
-	
 	srandom(time(NULL));
 }
 
@@ -158,53 +154,55 @@ static NSString * userAgentString;
 	// Special case: if there's currently no ad content view, certain transitions will
 	// look strange (e.g. CurlUp / CurlDown). We'll just omit the transition.
 	if (!_adContentView) type = MPAdAnimationTypeNone;
-	
+    if (type == MPAdAnimationTypeNone) {
+        [self addSubview:view];
+        [self animationDidStop:kAdAnimationId finished:[NSNumber numberWithBool:YES] context:view];
+        return;
+    } 
 	if (type == MPAdAnimationTypeFade) view.alpha = 0.0;
 	
 	MPLogDebug(@"Ad view (%p) is using animationType: %d", self, type);
 	
-	[UIView beginAnimations:kAdAnimationId context:view];
-	[UIView setAnimationDelegate:self];
-	[UIView setAnimationDidStopSelector:@selector(animationDidStop:finished:context:)];
-	[UIView setAnimationDuration:1.0];
-	
-	switch (type)
-	{
-		case MPAdAnimationTypeFlipFromLeft:
-			[self addSubview:view];
-			[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft 
-								   forView:self 
-									 cache:YES];
-			break;
-		case MPAdAnimationTypeFlipFromRight:
-			[self addSubview:view];
-			[UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight
-								   forView:self 
-									 cache:YES];
-			break;
-		case MPAdAnimationTypeCurlUp:
-			[self addSubview:view];
-			[UIView setAnimationTransition:UIViewAnimationTransitionCurlUp
-								   forView:self 
-									 cache:YES];
-			break;
-		case MPAdAnimationTypeCurlDown:
-			[self addSubview:view];
-			[UIView setAnimationTransition:UIViewAnimationTransitionCurlDown
-								   forView:self 
-									 cache:YES];
-			break;
-		case MPAdAnimationTypeFade:
-			[UIView setAnimationCurve:UIViewAnimationCurveLinear];
-			[self addSubview:view];
-			view.alpha = 1.0;
-			break;
-		default:
-			[self addSubview:view];
-			break;
-	}
-	
-	[UIView commitAnimations];
+    [UIView beginAnimations:kAdAnimationId context:view];
+    [UIView setAnimationDelegate:self];
+    [UIView setAnimationDidStopSelector:@selector(animationDidStop:finished:context:)];
+    [UIView setAnimationDuration:1.0];
+    
+    switch (type)
+    {
+        case MPAdAnimationTypeFlipFromLeft:
+            [self addSubview:view];
+            [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft 
+                                   forView:self 
+                                     cache:YES];
+            break;
+        case MPAdAnimationTypeFlipFromRight:
+            [self addSubview:view];
+            [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight
+                                   forView:self 
+                                     cache:YES];
+            break;
+        case MPAdAnimationTypeCurlUp:
+            [self addSubview:view];
+            [UIView setAnimationTransition:UIViewAnimationTransitionCurlUp
+                                   forView:self 
+                                     cache:YES];
+            break;
+        case MPAdAnimationTypeCurlDown:
+            [self addSubview:view];
+            [UIView setAnimationTransition:UIViewAnimationTransitionCurlDown
+                                   forView:self 
+                                     cache:YES];
+            break;
+        case MPAdAnimationTypeFade:
+            [UIView setAnimationCurve:UIViewAnimationCurveLinear];
+            [self addSubview:view];
+            view.alpha = 1.0;
+            break;
+        default:
+            break;
+    }
+    [UIView commitAnimations];
 }
 
 - (void)animationDidStop:(NSString *)animationID finished:(NSNumber *)finished 
