@@ -25,12 +25,12 @@
 	}
 
 	SEL selector = NSSelectorFromString(selectorString);
+	MPAdView *adView = [self.adManager adView];
 	
 	// First, try calling the no-object selector.
-	
-	if ([self.adManager.adView.delegate respondsToSelector:selector])
+	if ([adView.delegate respondsToSelector:selector])
 	{
-		[self.adManager.adView.delegate performSelector:selector];
+		[adView.delegate performSelector:selector];
 	}
 	// Then, try calling the selector passing in the ad view.
 	else 
@@ -38,9 +38,9 @@
 		NSString *selectorWithObjectString = [NSString stringWithFormat:@"%@:", selectorString];
 		SEL selectorWithObject = NSSelectorFromString(selectorWithObjectString);
 		
-		if ([self.adManager.adView.delegate respondsToSelector:selectorWithObject])
+		if ([adView.delegate respondsToSelector:selectorWithObject])
 		{
-			[self.adManager.adView.delegate performSelector:selectorWithObject withObject:self.adManager.adView];
+			[adView.delegate performSelector:selectorWithObject withObject:adView];
 		}
 		else
 		{

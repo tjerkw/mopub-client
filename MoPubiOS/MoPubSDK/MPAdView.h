@@ -32,12 +32,14 @@ typedef enum
 	// Delegate object for the ad view.
 	id<MPAdViewDelegate> _delegate;
 	
+	// "Business-logic" object for the ad view.
 	MPAdManager *_adManager;
-	
-	CLLocation *_location;
 	
 	// Ad unit identifier for the ad view.
 	NSString *_adUnitId;
+	
+	// Location data which may be used for targeting.
+	CLLocation *_location;
 		
 	// Subview that represents the actual ad content. Set via -setAdContentView.
 	UIView *_adContentView;
@@ -63,12 +65,12 @@ typedef enum
 
 @property (nonatomic, assign) id<MPAdViewDelegate> delegate;
 @property (nonatomic, copy) NSString *adUnitId;
+@property (nonatomic, copy) CLLocation *location;
 @property (nonatomic, retain) NSString *keywords;
 @property (nonatomic, assign) CGSize creativeSize;
 @property (nonatomic, assign) BOOL scrollable;
 @property (nonatomic, assign) BOOL stretchesWebContentToFill;
 @property (nonatomic, assign) MPAdAnimationType animationType;
-@property (nonatomic, retain) CLLocation *location;
 
 /*
  * Returns an MPAdView with the given ad unit ID.
@@ -192,14 +194,14 @@ typedef enum
 /*
  * This method should be implemented if you wish to limit the precision of the geographical
  * coordinates sent to the MoPub server. Return the number of digits after the decimal place
- * you wish us to use. Default precision is 
+ * you wish us to use.
  */
-- (int)geoLocationPrecision;
+- (int)geolocationPrecision;
 
 /*
- * You should implement this method and return NO if you desire not to send the geographical
- * coordinates to the MoPub server. If this is not implemented, default is YES.
+ * This method should be implemented to return NO if you desire not to send any geographical
+ * coordinates to the MoPub server.
  */
-- (BOOL)enableGeoLocation;
+- (BOOL)geolocationEnabled;
 
 @end

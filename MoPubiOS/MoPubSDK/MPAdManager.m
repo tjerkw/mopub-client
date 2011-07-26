@@ -47,7 +47,6 @@ NSString * const kAdTypeClear = @"clear";
 
 @property (nonatomic, assign) MPAdView *adView;
 @property (nonatomic, copy) NSString *adUnitId;
-@property (nonatomic, retain) CLLocation *location;
 @property (nonatomic, copy) NSString *keywords;
 @property (nonatomic, copy) NSURL *URL;
 @property (nonatomic, copy) NSURL *clickURL;
@@ -264,26 +263,30 @@ NSString * const kAdTypeClear = @"clear";
 - (NSString *)locationQueryStringComponent
 {
 	NSString *result = @"";
-	if ([_adView.delegate respondsToSelector:@selector(geolocationEnabled)]) {
-		if (![_adView.delegate geolocationEnabled]) {
-			return result;
-		}
+	
+	if ([self.adView.delegate respondsToSelector:@selector(geolocationEnabled)] &&
+		![self.adView.delegate geolocationEnabled]) {
+		return result;
 	}
-	if (_adView.location)
+	
+	if (self.adView.location)
 	{	
-		float lat = _adView.location.coordinate.latitude;
-		float lon = _adView.location.coordinate.longitude;
-		if ([_adView.delegate respondsToSelector:@selector(geoLocationPrecision)]) {
+		float lat = self.adView.location.coordinate.latitude;
+		float lon = self.adView.location.coordinate.longitude;
+		
+		if ([self.adView.delegate respondsToSelector:@selector(geolocationPrecision)]) {
 			NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
-			[formatter setMaximumFractionDigits:[_adView.delegate geoLocationPrecision]];
+			[formatter setMaximumFractionDigits:[self.adView.delegate geolocationPrecision]];
 			result = [result stringByAppendingFormat:
 					  @"&ll=%@,%@",
 					  [formatter stringFromNumber:[NSNumber numberWithFloat:lat]],
 					  [formatter stringFromNumber:[NSNumber numberWithFloat:lon]]];
+			[formatter release];
+		} else {
+			result = [result stringByAppendingFormat:@"&ll=%f,%f", lat, lon];
 		}
-		result = [result stringByAppendingFormat:
-				  @"&ll=%f,%f", lat, lon];
 	}
+	
 	return result;
 }
 
