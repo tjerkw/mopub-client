@@ -28,7 +28,7 @@ static NSString * const kOrientationBoth				= @"b";
 @property (nonatomic, retain) UIButton *closeButton;
 @property (nonatomic, retain) MPBaseInterstitialAdapter *currentAdapter;
 
-- (id)initWithAdUnitId:(NSString *)ID parentViewController:(UIViewController *)parent;
+- (id)initWithAdUnitId:(NSString *)ID;
 - (void)setCloseButtonImageNamed:(NSString *)name;
 - (void)layoutCloseButton;
 - (void)closeButtonPressed;
@@ -39,6 +39,7 @@ static NSString * const kOrientationBoth				= @"b";
 
 @synthesize ready = _ready;
 @synthesize parent = _parent;
+@synthesize viewController = _viewController;
 @synthesize adUnitId = _adUnitId;
 @synthesize closeButton = _closeButton;
 @synthesize currentAdapter = _currentAdapter;
@@ -82,8 +83,7 @@ static NSString * const kOrientationBoth				= @"b";
 		// Create the ad controller if it doesn't exist.
 		if (!controller)
 		{
-			controller = [[[MPInterstitialAdController alloc] initWithAdUnitId:ID 
-														  parentViewController:nil] autorelease];
+			controller = [[[MPInterstitialAdController alloc] initWithAdUnitId:ID] autorelease];
 			[controllers addObject:controller];
 		}
 		return controller;
@@ -107,11 +107,10 @@ static NSString * const kOrientationBoth				= @"b";
 #pragma mark -
 #pragma mark Lifecycle
 
-- (id)initWithAdUnitId:(NSString *)ID parentViewController:(UIViewController *)parent
+- (id)initWithAdUnitId:(NSString *)ID 
 {
 	if (self = [super init])
 	{
-		_parent = parent;
 		_adUnitId = ID;
 		_closeButtonType = InterstitialCloseButtonTypeDefault;
 		_orientationType = InterstitialOrientationTypeBoth;
@@ -271,7 +270,7 @@ static NSString * const kOrientationBoth				= @"b";
 {	
 	if (self.currentAdapter != nil)
 	{
-		[self.currentAdapter showInterstitialFromViewController:self.parent];
+		[self.currentAdapter showInterstitialFromViewController:self.viewController];
 	}
 	else 
 	{
@@ -284,7 +283,7 @@ static NSString * const kOrientationBoth				= @"b";
 		_navigationBarWasHidden = self.navigationController.navigationBarHidden;
 		[self.navigationController setNavigationBarHidden:YES animated:YES];
 		
-		[self.parent presentModalViewController:self animated:YES];
+		[self.viewController presentModalViewController:self animated:YES];
 		[self interstitialDidAppearForAdapter:nil];
 	}
 }
