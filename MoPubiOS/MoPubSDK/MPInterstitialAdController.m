@@ -354,9 +354,10 @@ static NSString * const kOrientationBoth				= @"b";
 		_closeButtonType = InterstitialCloseButtonTypeNone;
 	else
 		_closeButtonType = InterstitialCloseButtonTypeDefault;
-	
+  
 	// Adjust the close button depending on the header value.
-	[self layoutCloseButton];
+  self.view;
+	//[self layoutCloseButton];
 	
 	// Set the allowed orientations.
 	NSString *orientationChoice = [params objectForKey:kOrientationHeaderKey];
