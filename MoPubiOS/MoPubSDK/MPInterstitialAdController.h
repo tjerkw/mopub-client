@@ -41,9 +41,10 @@ typedef NSUInteger InterstitialOrientationType;
 	// Underlying ad view used for the interstitial.
 	MPInterstitialAdView *_adView;
 	
-	// Reference to the view controller that is presenting this interstitial.
+  // Reference to the delegate of the interstitial.
 	NSObject<MPInterstitialAdControllerDelegate> *_parent;
   
+  // Reference to the view controller that is presenting this interstitial.
   UIViewController *_viewController;
 	
 	// The ad unit ID.

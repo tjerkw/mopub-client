@@ -50,7 +50,6 @@
 	getAndShow = NO;
 	self.interstitialAdController = [MPInterstitialAdController interstitialAdControllerForAdUnitId:PUB_ID_INTERSTITIAL];	
 	self.interstitialAdController.parent = self;
-  self.interstitialAdController.viewController = self;
 	[self.interstitialAdController loadAd];
 }
 

@@ -270,7 +270,14 @@ static NSString * const kOrientationBoth				= @"b";
 {	
 	if (self.currentAdapter != nil)
 	{
-		[self.currentAdapter showInterstitialFromViewController:self.viewController];
+    if (self.viewController) 
+    {
+      [self.currentAdapter showInterstitialFromViewController:self.viewController];
+    } 
+    else 
+    {
+      [self.currentAdapter showInterstitialFromViewController:(UIViewController *)self.parent];
+    }
 	}
 	else 
 	{
@@ -283,7 +290,11 @@ static NSString * const kOrientationBoth				= @"b";
 		_navigationBarWasHidden = self.navigationController.navigationBarHidden;
 		[self.navigationController setNavigationBarHidden:YES animated:YES];
 		
-		[self.viewController presentModalViewController:self animated:YES];
+    if(self.viewController) {
+      [self.viewController presentModalViewController:self animated:YES];      
+    } else {
+      [(UIViewController *)self.parent presentModalViewController:self animated:YES];
+    }
 		[self interstitialDidAppearForAdapter:nil];
 	}
 }
@@ -356,8 +367,7 @@ static NSString * const kOrientationBoth				= @"b";
 		_closeButtonType = InterstitialCloseButtonTypeDefault;
   
 	// Adjust the close button depending on the header value.
-  self.view;
-	//[self layoutCloseButton];
+	[self layoutCloseButton];
 	
 	// Set the allowed orientations.
 	NSString *orientationChoice = [params objectForKey:kOrientationHeaderKey];
