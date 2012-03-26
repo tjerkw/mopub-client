@@ -446,9 +446,9 @@ NSString * const kAdTypeMraid = @"mraid";
 		
 		if ([self.adView.delegate respondsToSelector:selectorWithObject])
 		{
+            CJSONDeserializer *deserializer = [CJSONDeserializer deserializerWithNullObject:NULL];
 			NSData *data = [dataString dataUsingEncoding:NSUTF8StringEncoding];
-			NSDictionary *dataDictionary = [[CJSONDeserializer deserializer] deserializeAsDictionary:data
-																							   error:NULL];
+			NSDictionary *dataDictionary = [deserializer deserializeAsDictionary:data error:NULL];
 			[self.adView.delegate performSelector:selectorWithObject withObject:dataDictionary];
 		}
 		else
