@@ -144,6 +144,7 @@ static NSString * const kOrientationBoth				= @"b";
 	[_currentAdapter release];
 	[_adView release];
 	[_adUnitId release];
+    [_closeButton release];
     [super dealloc];
 }
 
