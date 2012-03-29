@@ -159,8 +159,8 @@ static NSString * const kOrientationBoth				= @"b";
 {
 	[super viewDidAppear:animated];
     
-	if (!_adHasBeenPresented) {
-        _adHasBeenPresented = YES;
+	if (!_isOnModalViewControllerStack) {
+        _isOnModalViewControllerStack = YES;
         [_adView adViewDidAppear];
         
         // XXX: In certain cases, UIWebView's content appears off-center due to rotation / auto-
@@ -182,6 +182,7 @@ static NSString * const kOrientationBoth				= @"b";
 	// controller is presented (e.g. the ad browser). We only want to send a "did disappear" message
     // to the delegate for the first case -- when the interstitial has actually been dismissed.
 	if (!self.modalViewController) {
+        _isOnModalViewControllerStack = NO;
         _adView.alpha = 0.0;
         [self interstitialDidDisappearForAdapter:nil];
     }
