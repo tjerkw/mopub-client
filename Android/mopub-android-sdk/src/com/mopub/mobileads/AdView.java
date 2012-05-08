@@ -894,14 +894,16 @@ public class AdView extends WebView {
         new Thread(new Runnable() {
             public void run () {
                 DefaultHttpClient httpclient = new DefaultHttpClient();
-                HttpGet httpget = new HttpGet(mImpressionUrl);
-                httpget.addHeader("User-Agent", mUserAgent);
                 try {
+                    HttpGet httpget = new HttpGet(mImpressionUrl);
+                    httpget.addHeader("User-Agent", mUserAgent);
                     httpclient.execute(httpget);
+                } catch (IllegalArgumentException e) {
+                    Log.d("MoPub", "Impression tracking failed (IllegalArgumentException): "+mImpressionUrl);
                 } catch (ClientProtocolException e) {
-                    Log.i("MoPub", "Impression tracking failed: "+mImpressionUrl);
+                    Log.d("MoPub", "Impression tracking failed (ClientProtocolException): "+mImpressionUrl);
                 } catch (IOException e) {
-                    Log.i("MoPub", "Impression tracking failed: "+mImpressionUrl);
+                    Log.d("MoPub", "Impression tracking failed (IOException): "+mImpressionUrl);
                 } finally {
                     httpclient.getConnectionManager().shutdown();
                 }
