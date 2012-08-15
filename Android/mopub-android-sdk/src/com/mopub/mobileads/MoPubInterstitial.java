@@ -132,18 +132,6 @@ public class MoPubInterstitial implements OnAdLoadedListener, OnAdFailedListener
         
         if (mListener != null) mListener.OnInterstitialLoaded();
     }
-    
-    public void customEventDidLoadAd() {
-        if (mInterstitialView != null) mInterstitialView.trackImpression();
-    }
-
-    public void customEventDidFailToLoadAd() {
-        if (mInterstitialView != null) mInterstitialView.loadFailUrl();
-    }
-
-    public void customEventActionWillBegin() {
-        if (mInterstitialView != null) mInterstitialView.registerClick();
-    }
 
     @Deprecated
     public void showAd() {
@@ -189,6 +177,26 @@ public class MoPubInterstitial implements OnAdLoadedListener, OnAdFailedListener
     
     public MoPubInterstitialListener getListener() {
         return mListener;
+    }
+    
+    public void customEventDidLoadAd() {
+        if (mInterstitialView != null) mInterstitialView.trackImpression();
+    }
+
+    public void customEventDidFailToLoadAd() {
+        if (mInterstitialView != null) mInterstitialView.loadFailUrl();
+    }
+
+    public void customEventActionWillBegin() {
+        if (mInterstitialView != null) mInterstitialView.registerClick();
+    }
+    
+    public CustomEventListener getCustomEventListener() {
+        return (mInterstitialView != null) ? mInterstitialView.getCustomEventListener() : null;
+    }
+    
+    public void setCustomEventListener(CustomEventListener listener) {
+        if (mInterstitialView != null) mInterstitialView.setCustomEventListener(listener);
     }
     
     public Location getLocation() {
