@@ -99,6 +99,8 @@ public class MoPubView extends FrameLayout {
     private OnAdPresentedOverlayListener mOnAdPresentedOverlayListener;
     private OnAdClosedListener mOnAdClosedListener;
     private OnAdClickedListener mOnAdClickedListener;
+    
+    private CustomEventListener mCustomEventListener;
 
     public MoPubView(Context context) {
         this(context, null);
@@ -281,13 +283,14 @@ public class MoPubView extends FrameLayout {
         if (mAdView == null) return;
         
         if (visibility == VISIBLE) {
-            Log.d("MoPub", "Ad Unit ("+mAdView.getAdUnitId()+") going visible: enabling refresh");
+            Log.d("MoPub", "Ad Unit ("+mAdView.getAdUnitId()+") going visible: reset refresh");
             mIsInForeground = true;
-            mAdView.setAutorefreshEnabled(true);
+            mAdView.setAutorefreshEnabled(mPreviousAutorefreshSetting);
         }
         else {
             Log.d("MoPub", "Ad Unit ("+mAdView.getAdUnitId()+") going invisible: disabling refresh");
             mIsInForeground = false;
+            mPreviousAutorefreshSetting = mAdView.getAutorefreshEnabled();
             mAdView.setAutorefreshEnabled(false);
         }
     }
@@ -446,5 +449,13 @@ public class MoPubView extends FrameLayout {
     
     public void setAdContentView(View view) {
         if (mAdView != null) mAdView.setAdContentView(view);
+    }
+    
+    public CustomEventListener getCustomEventListener() {
+        return mCustomEventListener;
+    }
+    
+    public void setCustomEventListener(CustomEventListener listener) {
+        mCustomEventListener = listener;
     }
 }
