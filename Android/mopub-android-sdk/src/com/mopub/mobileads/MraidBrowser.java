@@ -1,11 +1,13 @@
 package com.mopub.mobileads;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -69,7 +71,12 @@ public class MraidBrowser extends Activity {
                         url.startsWith("voicemail:") || url.startsWith("sms:") || 
                         url.startsWith("mailto:") || url.startsWith("geo:") || 
                         url.startsWith("google.streetview:")) {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    } catch (ActivityNotFoundException exception) {
+                        Log.w("MoPub", "Unable to start activity for " + url + ". " +
+                                "Ensure that your phone can handle this intent.");
+                    }
                     finish();
                     return true;
                 }
