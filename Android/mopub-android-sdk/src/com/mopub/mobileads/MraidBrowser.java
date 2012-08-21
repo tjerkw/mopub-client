@@ -65,14 +65,20 @@ public class MraidBrowser extends Activity {
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 if (url == null) return false;
                 
+                Uri uri = Uri.parse(url);
+                String host = uri.getHost();
+                
                 if (url.startsWith("market:") || url.startsWith("tel:") || 
                         url.startsWith("voicemail:") || url.startsWith("sms:") || 
                         url.startsWith("mailto:") || url.startsWith("geo:") || 
-                        url.startsWith("google.streetview:")) {
+                        url.startsWith("google.streetview:") ||
+                        "play.google.com".equals(host) ||
+                        "market.android.com".equals(host)) {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                     finish();
                     return true;
                 }
+                
                 return false;
             }
             
