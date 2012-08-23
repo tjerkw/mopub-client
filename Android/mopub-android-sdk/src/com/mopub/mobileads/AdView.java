@@ -81,7 +81,6 @@ public class AdView extends WebView {
     public static final String EXTRA_AD_CLICK_DATA = "com.mopub.intent.extra.AD_CLICK_DATA";
     
     private static final int MINIMUM_REFRESH_TIME_MILLISECONDS = 10000;
-    private static final int HTTP_CLIENT_TIMEOUT_MILLISECONDS = 10000;
     
     private String mAdUnitId;
     private String mKeywords;
@@ -94,7 +93,6 @@ public class AdView extends WebView {
     private boolean mIsLoading;
     private boolean mAutorefreshEnabled;
     private int mRefreshTimeMilliseconds = 60000;
-    private int mTimeoutMilliseconds = HTTP_CLIENT_TIMEOUT_MILLISECONDS;
     private int mWidth;
     private int mHeight;
     private String mAdOrientation;
@@ -396,10 +394,13 @@ public class AdView extends WebView {
             return;
         }
         
+        mFailUrl = null;
         mUrl = url;
         mIsLoading = true;
         
-        mAdFetcher.fetchAdForUrl(mUrl);
+        if (mAdFetcher != null) {
+            mAdFetcher.fetchAdForUrl(mUrl);
+        }
     }
     
     protected void configureAdViewUsingHeadersFromHttpResponse(HttpResponse response) {
@@ -678,6 +679,14 @@ public class AdView extends WebView {
     protected void cancelRefreshTimer() {
         mRefreshHandler.removeCallbacks(mRefreshRunnable);
     }
+    
+    protected int getRefreshTimeMilliseconds() {
+        return mRefreshTimeMilliseconds;
+    }
+    
+    protected void setRefreshTimeMilliseconds(int refreshTimeMilliseconds) {
+        mRefreshTimeMilliseconds = refreshTimeMilliseconds;
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -706,7 +715,9 @@ public class AdView extends WebView {
     }
 
     public void setTimeout(int milliseconds) {
-        mTimeoutMilliseconds = milliseconds;
+        if (mAdFetcher != null) {
+            mAdFetcher.setTimeout(milliseconds);
+        }
     }
 
     public int getAdWidth() {
