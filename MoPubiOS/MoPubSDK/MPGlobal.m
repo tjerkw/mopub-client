@@ -187,7 +187,6 @@ BOOL MPViewIntersectsKeyWindow(UIView *view)
     return CGRectIntersectsRect(viewFrameInWindowCoordinates, keyWindow.frame);
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @implementation CJSONDeserializer (MPAdditions)
