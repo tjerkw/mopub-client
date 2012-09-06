@@ -529,6 +529,8 @@ static NSString * const kOrientationBoth				= @"b";
 
 	if (!adapterType || [adapterType isEqualToString:@""] || 
 		[adapterType isEqualToString:@"html"]) {
+        [self.currentAdapter unregisterDelegate];
+        self.currentAdapter = nil;
 		return;
 	}
 
@@ -678,6 +680,11 @@ static NSString * const kOrientationBoth				= @"b";
 - (void)interstitialDidExpireForAdapter:(MPBaseInterstitialAdapter *)adapter
 {
     _ready = NO;
+    
+    [adapter unregisterDelegate];
+    if (self.currentAdapter == adapter) {
+        self.currentAdapter = nil;
+    }
     
     if ([self.delegate respondsToSelector:@selector(interstitialDidExpire:)]) {
         [self.delegate interstitialDidExpire:self];
