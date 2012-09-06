@@ -194,9 +194,14 @@ static NSArray *BROWSER_SCHEMES, *SPECIAL_HOSTS;
 											  cancelButtonTitle:@"Cancel" 
 										 destructiveButtonTitle:nil 
 											  otherButtonTitles:@"Open in Safari", nil] autorelease];
-		[self.actionSheet showFromBarButtonItem:self.safariButton animated:YES];
+		
+        if ([UIActionSheet instancesRespondToSelector:@selector(showFromBarButtonItem:animated:)]) {
+            [self.actionSheet showFromBarButtonItem:self.safariButton animated:YES];
+        } else {
+            [self.actionSheet showInView:self.webView];
+        }
 	}
-}	
+}
 
 - (void)dismissActionSheet
 {
