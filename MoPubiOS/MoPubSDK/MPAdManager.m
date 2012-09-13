@@ -16,6 +16,7 @@
 #import "MPGlobal.h"
 #import "MPMraidAdapter.h"
 #import "MPMraidInterstitialAdapter.h"
+#import "MPKeywordProvider.h"
 #import "CJSONDeserializer.h"
 
 NSString * const kTimerNotificationName = @"Autorefresh";
@@ -75,6 +76,7 @@ NSString * const kAdTypeMraid = @"mraid";
 - (void)registerForApplicationStateTransitionNotifications;
 - (void)removeWebviewFromPool:(UIWebView *)webview;
 - (void)destroyWebviewPool;
+- (NSString *)keywordsQueryStringComponent;
 - (NSString *)orientationQueryStringComponent;
 - (NSString *)scaleFactorQueryStringComponent;
 - (NSString *)timeZoneQueryStringComponent;
@@ -268,13 +270,13 @@ NSString * const kAdTypeMraid = @"mraid";
 }
 
 - (NSURL *)serverRequestURL {
-	NSString *urlString = [NSString stringWithFormat:@"http://%@/m/ad?v=8&udid=%@&q=%@&id=%@&nv=%@", 
+	NSString *urlString = [NSString stringWithFormat:@"http://%@/m/ad?v=8&udid=%@&id=%@&nv=%@", 
 						   HOSTNAME,
-						   MPAdvertisingIdentifier(),
-						   [_keywords stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
+                           MPAdvertisingIdentifier(),
 						   [_adUnitId stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
 						   MP_SDK_VERSION];
 	
+    urlString = [urlString stringByAppendingString:[self keywordsQueryStringComponent]];
 	urlString = [urlString stringByAppendingString:[self orientationQueryStringComponent]];
 	urlString = [urlString stringByAppendingString:[self scaleFactorQueryStringComponent]];
 	urlString = [urlString stringByAppendingString:[self timeZoneQueryStringComponent]];
@@ -289,6 +291,34 @@ NSString * const kAdTypeMraid = @"mraid";
     }
     
 	return [NSURL URLWithString:urlString];
+}
+
+- (NSString *)keywordsQueryStringComponent
+{
+    NSMutableArray *keywordsArray = [NSMutableArray array];
+    NSString *trimmedKeywords = [_keywords stringByTrimmingCharactersInSet:
+                                 [NSCharacterSet whitespaceCharacterSet]];
+    if ([trimmedKeywords length] > 0) {
+        [keywordsArray addObject:trimmedKeywords];
+    }
+    
+    // Append the Facebook attribution keyword (if available).
+    Class fbKeywordProviderClass = NSClassFromString(@"MPFacebookKeywordProvider");
+    if ([fbKeywordProviderClass conformsToProtocol:@protocol(MPKeywordProvider)])
+    {
+        NSString *fbAttributionKeyword = [(Class<MPKeywordProvider>) fbKeywordProviderClass keyword];
+        if ([fbAttributionKeyword length] > 0) {
+            [keywordsArray addObject:fbAttributionKeyword];
+        }
+    }
+    
+    if ([keywordsArray count] == 0) {
+        return @"";
+    } else {
+        NSString *keywords = [[keywordsArray componentsJoinedByString:@","]
+                              stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        return [NSString stringWithFormat:@"&q=%@", keywords];
+    }
 }
 
 - (NSString *)orientationQueryStringComponent

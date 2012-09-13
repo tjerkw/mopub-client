@@ -64,6 +64,7 @@
 		A77B549C15F839B500FCAB6E /* UIWebView+MPAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = A77B547E15F839B500FCAB6E /* UIWebView+MPAdditions.m */; };
 		A7BFF5501611293F006FAB2E /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7BFF54F1611293F006FAB2E /* Default-568h@2x.png */; };
 		A7BFF55716113A86006FAB2E /* FlexibleRotationTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = A7BFF55616113A86006FAB2E /* FlexibleRotationTabBarController.m */; };
+		A7800653161490F3006FCEBE /* MPFacebookKeywordProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = A7BFF54E16112696006FAB2E /* MPFacebookKeywordProvider.m */; };
 		A8F4C6FD13DA05D20001A147 /* CDataScanner.m in Sources */ = {isa = PBXBuildFile; fileRef = A8F4C6E613DA05D20001A147 /* CDataScanner.m */; };
 		A8F4C6FE13DA05D20001A147 /* CFilteringJSONSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = A8F4C6E913DA05D20001A147 /* CFilteringJSONSerializer.m */; };
 		A8F4C6FF13DA05D20001A147 /* CJSONDeserializer_BlocksExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = A8F4C6EB13DA05D20001A147 /* CJSONDeserializer_BlocksExtensions.m */; };
@@ -174,6 +175,9 @@
 		A7BFF54F1611293F006FAB2E /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		A7BFF55516113A86006FAB2E /* FlexibleRotationTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FlexibleRotationTabBarController.h; sourceTree = "<group>"; };
 		A7BFF55616113A86006FAB2E /* FlexibleRotationTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FlexibleRotationTabBarController.m; sourceTree = "<group>"; };
+		A7BFF53D161115A4006FAB2E /* MPKeywordProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MPKeywordProvider.h; sourceTree = "<group>"; };
+		A7BFF54D16112696006FAB2E /* MPFacebookKeywordProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MPFacebookKeywordProvider.h; sourceTree = "<group>"; };
+		A7BFF54E16112696006FAB2E /* MPFacebookKeywordProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MPFacebookKeywordProvider.m; sourceTree = "<group>"; };
 		A8F4C6E513DA05D20001A147 /* CDataScanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDataScanner.h; path = ../TouchJSON/CDataScanner.h; sourceTree = SOURCE_ROOT; };
 		A8F4C6E613DA05D20001A147 /* CDataScanner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDataScanner.m; path = ../TouchJSON/CDataScanner.m; sourceTree = SOURCE_ROOT; };
 		A8F4C6E813DA05D20001A147 /* CFilteringJSONSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CFilteringJSONSerializer.h; sourceTree = "<group>"; };
@@ -342,8 +346,11 @@
 				A77B545415F839B500FCAB6E /* MPConstants.h */,
 				A77B545515F839B500FCAB6E /* MPCustomEventAdapter.h */,
 				A77B545615F839B500FCAB6E /* MPCustomEventAdapter.m */,
+				A7BFF54D16112696006FAB2E /* MPFacebookKeywordProvider.h */,
+				A7BFF54E16112696006FAB2E /* MPFacebookKeywordProvider.m */,
 				A77B545715F839B500FCAB6E /* MPGlobal.h */,
 				A77B545815F839B500FCAB6E /* MPGlobal.m */,
+				A7BFF53D161115A4006FAB2E /* MPKeywordProvider.h */,
 				A77B545915F839B500FCAB6E /* MPInterstitialAdapter.h */,
 				A77B545A15F839B500FCAB6E /* MPInterstitialAdapter.m */,
 				A77B545B15F839B500FCAB6E /* MPInterstitialAdController.h */,
@@ -583,6 +590,7 @@
 				A77B549515F839B500FCAB6E /* MRAdViewBrowsingController.m in Sources */,
 				A77B549615F839B500FCAB6E /* MRAdViewDisplayController.m in Sources */,
 				A77B549715F839B500FCAB6E /* MRCommand.m in Sources */,
+				A7800653161490F3006FCEBE /* MPFacebookKeywordProvider.m in Sources */,
 				A77B549815F839B500FCAB6E /* MRDimmingView.m in Sources */,
 				A77B549915F839B500FCAB6E /* MRProperty.m in Sources */,
 				A77B549C15F839B500FCAB6E /* UIWebView+MPAdditions.m in Sources */,
