@@ -238,8 +238,8 @@ static NSArray *BROWSER_SCHEMES, *SPECIAL_HOSTS;
  navigationType:(UIWebViewNavigationType)navigationType 
 {
 	MPLogDebug(@"Ad browser starting to load request %@", request.URL);
-	
-	/* 
+    
+    /* 
 	 * For all links with http:// or https:// scheme, open in our browser UNLESS
 	 * the host is one of our special hosts that should be handled by the OS.
 	 */
@@ -317,10 +317,6 @@ static NSArray *BROWSER_SCHEMES, *SPECIAL_HOSTS;
 {
     _hasLeftApplicationForCurrentURL = YES;
     
-    if ([self.delegate respondsToSelector:@selector(browserControllerWillLeaveApplication:)]) {
-        [self.delegate browserControllerWillLeaveApplication:self];
-    }
-    
     // XXX: It's possible that our browser may try to leave the application very shortly after
     // receiving a -webViewDidFinishLoad: callback (e.g. if a landing page uses window.location
     // right after the page is downloaded). When this happens, the browser's delegate will be asked
@@ -331,12 +327,23 @@ static NSArray *BROWSER_SCHEMES, *SPECIAL_HOSTS;
         [self performSelector:@selector(dismissBrowserAndOpenURL:) withObject:URL
                    afterDelay:kModalTransitionDelay];
     } else {
-        [self dismissBrowserAndOpenURL:URL];
+        // The browser may not have been presented to the screen yet (i.e. it may still be loading
+        // in the background); if that's the case, don't call any dismissal methods.
+        BOOL isOnscreen = !!self.view.window;
+        if (isOnscreen) {
+            [self dismissBrowserAndOpenURL:URL];
+        } else {
+            [[UIApplication sharedApplication] openURL:URL];
+        }
     }
 }
 
 - (void)dismissBrowserAndOpenURL:(NSURL *)URL
 {
+    if ([self.delegate respondsToSelector:@selector(browserControllerWillLeaveApplication:)]) {
+        [self.delegate browserControllerWillLeaveApplication:self];
+    }
+    
     // Ensure that the browser controller gets dismissed even if its delegate is set to nil.
     if (self.delegate) {
         [self.delegate dismissBrowserController:self animated:NO]; 

@@ -83,6 +83,7 @@ NSString * const kAdTypeMraid = @"mraid";
 - (void)scheduleAutorefreshTimerIfEnabled;
 - (void)scheduleAutorefreshTimer;
 - (void)cancelPendingAutorefreshTimer;
+- (void)resumeAutorefreshAfterUserAction;
 - (NSURL *)serverRequestURL;
 - (UIWebView *)adWebViewWithFrame:(CGRect)frame;
 - (void)trackClick;
@@ -531,28 +532,30 @@ NSString * const kAdTypeMraid = @"mraid";
 - (void)dismissBrowserController:(MPAdBrowserController *)browserController animated:(BOOL)animated
 {
 	_adActionInProgress = NO;
-    
-    // XXX: Don't call -dismissModalViewControllerAnimated: until we verify that the receiver is
-    // currently presenting the browser, since that method may forward its message and cause its
-    // receiver to be dismissed. This check ensures that interstitials do not inadvertently dismiss
-    // themselves.
-    if ([self viewControllerForPresentingModalView].modalViewController) {
-        [[self viewControllerForPresentingModalView] dismissModalViewControllerAnimated:animated];
-    }
+
+    [[self viewControllerForPresentingModalView] dismissModalViewControllerAnimated:animated];
     
     if ([self.adView.delegate respondsToSelector:@selector(didDismissModalViewForAd:)])
         [self.adView.delegate didDismissModalViewForAd:self.adView];
 	
-	if (_autorefreshTimerNeedsScheduling)
-	{
-		[self.autorefreshTimer scheduleNow];
-		_autorefreshTimerNeedsScheduling = NO;
-	}
-	else if ([self.autorefreshTimer isScheduled]) [self.autorefreshTimer resume];
+	[self resumeAutorefreshAfterUserAction];
 }
 
 - (void)browserControllerDidFinishLoad:(MPAdBrowserController *)browserController {
-    if ([self viewControllerForPresentingModalView].modalViewController) return;
+    UIViewController *presentingViewController = [self viewControllerForPresentingModalView];
+    UIViewController *presentedViewController;
+    
+    if ([presentingViewController respondsToSelector:@selector(presentedViewController)]) {
+        // For iOS 5 and above.
+        presentedViewController = presentingViewController.presentedViewController;
+    } else {
+        // Prior to iOS 5, the modalViewController property holds the presented view controller.
+        presentedViewController = presentingViewController.modalViewController;
+    }
+    
+    // If the browser controller is already on-screen, don't try to present it again, or an
+    // exception will be thrown (iOS 5 and above).
+    if (presentedViewController == browserController) return;
     
     [self hideLoadingIndicatorAnimated:YES];
     [[self viewControllerForPresentingModalView] presentModalViewController:browserController
@@ -814,6 +817,20 @@ NSString * const kAdTypeMraid = @"mraid";
 	[self.autorefreshTimer invalidate];
 }
 
+- (void)resumeAutorefreshAfterUserAction
+{
+    // If an ad view refreshes while an ad action is in progress, it will have a new autorefresh
+    // timer, which must be scheduled once the ad action is complete.
+    if (_autorefreshTimerNeedsScheduling) {
+        [self.autorefreshTimer scheduleNow];
+        _autorefreshTimerNeedsScheduling = NO;
+    }
+    // Otherwise, simply resume the refresh timer that was previously paused when the action began.
+    else if ([self.autorefreshTimer isScheduled]) {
+        [self.autorefreshTimer resume];
+    }
+}
+
 #pragma mark -
 #pragma mark MPAdapterDelegate
 
@@ -877,12 +894,7 @@ NSString * const kAdTypeMraid = @"mraid";
 {
 	_adActionInProgress = NO;
 	
-	if (_autorefreshTimerNeedsScheduling)
-	{
-		[self.autorefreshTimer scheduleNow];
-		_autorefreshTimerNeedsScheduling = NO;
-	}
-	else if ([self.autorefreshTimer isScheduled]) [self.autorefreshTimer resume];
+	[self resumeAutorefreshAfterUserAction];
 	
 	// Notify delegate that the ad's modal view was dismissed, returning focus to the app.
 	if ([self.adView.delegate respondsToSelector:@selector(didDismissModalViewForAd:)])
@@ -1029,10 +1041,13 @@ NSString * const kAdTypeMraid = @"mraid";
 
 - (void)overlayCancelButtonPressed
 {
+    _adActionInProgress = NO;
     [_currentBrowserController stopLoading];
     [self hideLoadingIndicatorAnimated:YES];
-    [self dismissBrowserController:_currentBrowserController animated:YES];
+    [self resumeAutorefreshAfterUserAction];
     
+    if ([self.adView.delegate respondsToSelector:@selector(didDismissModalViewForAd:)])
+        [self.adView.delegate didDismissModalViewForAd:self.adView];
 }
 
 - (void)hideLoadingIndicatorAnimated:(BOOL)animated
@@ -1041,6 +1056,8 @@ NSString * const kAdTypeMraid = @"mraid";
 }
 
 @end
+
+#pragma mark -
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
