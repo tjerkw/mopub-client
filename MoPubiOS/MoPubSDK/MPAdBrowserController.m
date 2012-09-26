@@ -346,6 +346,9 @@ static NSArray *BROWSER_SCHEMES, *SPECIAL_HOSTS;
         if (isOnscreen) {
             [self dismissBrowserAndOpenURL:URL];
         } else {
+            if ([self.delegate respondsToSelector:@selector(browserControllerWillLeaveApplication:)]) {
+                [self.delegate browserControllerWillLeaveApplication:self];
+            }
             [[UIApplication sharedApplication] openURL:URL];
         }
     }
