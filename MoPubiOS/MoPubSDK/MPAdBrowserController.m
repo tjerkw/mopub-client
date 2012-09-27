@@ -240,7 +240,7 @@ static NSArray *BROWSER_SCHEMES, *SPECIAL_HOSTS;
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request 
  navigationType:(UIWebViewNavigationType)navigationType 
 {
-	MPLogDebug(@"Ad browser starting to load request %@", request.URL);
+	MPLogDebug(@"Ad browser (%p) starting to load URL: %@", self, request.URL);
     
     if ([self shouldLeaveApplicationForURL:request.URL]) {
         [self leaveApplicationForURL:request.URL];
@@ -295,7 +295,7 @@ static NSArray *BROWSER_SCHEMES, *SPECIAL_HOSTS;
     // Ignore "Frame Load Interrupted" errors after navigating to iTunes or the App Store.
     if (error.code == 102 && [error.domain isEqual:@"WebKitErrorDomain"]) return;
     
-	MPLogError(@"Ad browser %@ experienced an error: %@.", self, [error localizedDescription]);
+	MPLogError(@"Ad browser (%p) experienced an error: %@.", self, [error localizedDescription]);
 }
 
 #pragma mark - Internal

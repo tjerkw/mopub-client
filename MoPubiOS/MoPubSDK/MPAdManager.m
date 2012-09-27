@@ -247,14 +247,12 @@ NSString * const kAdTypeMraid = @"mraid";
 	}
 	
 	self.URL = (URL) ? URL : [self serverRequestURL];
-	MPLogDebug(@"Ad view (%p) loading ad with MoPub server URL: %@", self.adView, self.URL);
+	MPLogInfo(@"Ad view (%p) loading ad with MoPub server URL: %@", self.adView, self.URL);
 	
     _request.URL = self.URL;
 	[_conn release];
 	_conn = [[NSURLConnection connectionWithRequest:_request delegate:self] retain];
 	_isLoading = YES;
-	
-	MPLogInfo(@"Ad manager (%p) fired initial ad request.", self);
 }
 
 - (void)cancelAd
@@ -379,14 +377,14 @@ NSString * const kAdTypeMraid = @"mraid";
 {
     [_request setURL:self.clickURL];
 	[NSURLConnection connectionWithRequest:_request delegate:nil];
-	MPLogDebug(@"Ad view (%p) tracking click %@", self, self.clickURL);
+	MPLogDebug(@"Ad view (%p) tracking click %@", self.adView, self.clickURL);
 }
 
 - (void)trackImpression
 {
     [_request setURL:self.impTrackerURL];
 	[NSURLConnection connectionWithRequest:_request delegate:nil];
-	MPLogDebug(@"Ad view (%p) tracking impression %@", self, self.impTrackerURL);
+	MPLogDebug(@"Ad view (%p) tracking impression %@", self.adView, self.impTrackerURL);
 }
 
 - (void)setAdContentView:(UIView *)view
@@ -398,10 +396,10 @@ NSString * const kAdTypeMraid = @"mraid";
 {
     _ignoresAutorefresh = ignoresAutorefresh;
     if (_ignoresAutorefresh) {
-        MPLogDebug(@"Ad view (%p) is now ignoring autorefresh.", self);
+        MPLogDebug(@"Ad view (%p) is now ignoring autorefresh.", self.adView);
         if ([self.autorefreshTimer isScheduled]) [self.autorefreshTimer pause];
     } else {
-        MPLogDebug(@"Ad view (%p) is no longer ignoring autorefresh.", self);
+        MPLogDebug(@"Ad view (%p) is no longer ignoring autorefresh.", self.adView);
         if ([self.autorefreshTimer isScheduled]) [self.autorefreshTimer resume];
     }
 }
@@ -619,7 +617,7 @@ NSString * const kAdTypeMraid = @"mraid";
 		}
 	}
 	
-	MPLogInfo(@"Ad view (%p) received valid response from MoPub server.", self);
+	MPLogInfo(@"Ad view (%p) received valid response from MoPub server.", self.adView);
 	
 	// Initialize data.
 	[_data release];
@@ -681,7 +679,7 @@ NSString * const kAdTypeMraid = @"mraid";
 								   objectForKey:kNetworkTypeHeaderKey];
 	if (networkTypeHeader && ![networkTypeHeader isEqualToString:@""])
 	{
-		MPLogInfo(@"Fetching Ad Network Type: %@", networkTypeHeader);
+		MPLogInfo(@"Ad view (%p) is fetching ad network type: %@", self.adView, networkTypeHeader);
 	}
 
 	self.headers = headers;
@@ -693,7 +691,7 @@ NSString * const kAdTypeMraid = @"mraid";
 		[self replaceCurrentAdapterWithAdapter:nil];
 		
 		// Show a blank.
-		MPLogInfo(@"No ad available");
+		MPLogInfo(@"Ad view (%p) server response indicated no ad available.", self.adView);
 		[connection cancel];
 		_isLoading = NO;
 		[self.adView backFillWithNothing];
@@ -744,7 +742,7 @@ NSString * const kAdTypeMraid = @"mraid";
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
 	MPLogError(@"Ad view (%p) failed to get a valid response from MoPub server. Error: %@", 
-			   self, error);
+			   self.adView, error);
 	
 	// If the initial request to MoPub fails, replace the current ad content with a blank.
 	_isLoading = NO;
@@ -811,7 +809,7 @@ NSString * const kAdTypeMraid = @"mraid";
 	if (MPLogGetLevel() <= MPLogLevelTrace)
 	{
 		NSString *response = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-		MPLogTrace(@"Ad view (%p) loaded HTML content: %@", self, response);
+		MPLogTrace(@"Ad view (%p) loaded HTML content: %@", self.adView, response);
 		[response release];
 	}
 }
@@ -1096,7 +1094,7 @@ NSString * const kAdTypeMraid = @"mraid";
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
 	MPLogError(@"Ad view (%p) failed to get a valid response from MoPub server. Error: %@", 
-			   self, error);
+			   self.adView, error);
 	
 	// If the initial request to MoPub fails, replace the current ad content with a blank.
 	_isLoading = NO;
