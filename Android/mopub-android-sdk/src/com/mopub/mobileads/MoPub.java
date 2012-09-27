@@ -33,5 +33,5 @@
 package com.mopub.mobileads;
 
 public class MoPub {
-    public static final String SDK_VERSION = "1.8.9.3";
+    public static final String SDK_VERSION = "1.8.10.3";
 }
