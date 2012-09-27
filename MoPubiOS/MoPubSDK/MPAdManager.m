@@ -591,6 +591,8 @@ NSString * const kAdTypeMraid = @"mraid";
 }
 
 - (void)browserControllerWillLeaveApplication:(MPAdBrowserController *)browserController {
+    _adActionInProgress = NO;
+    [self resumeAutorefreshAfterUserAction];
     [self hideLoadingIndicatorAnimated:NO];
 }
 
@@ -931,7 +933,9 @@ NSString * const kAdTypeMraid = @"mraid";
 
 - (void)userWillLeaveApplicationFromAdapter:(MPBaseAdapter *)adapter
 {
-	// TODO: Implement.
+	_adActionInProgress = NO;
+    
+    [self resumeAutorefreshAfterUserAction];
 }
 
 - (CGSize)maximumAdSize
