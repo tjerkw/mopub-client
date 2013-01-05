@@ -176,7 +176,7 @@ public class MoPubView extends FrameLayout {
     }
 
     private void registerScreenStateBroadcastReceiver() {
-        if (mAdView == null) return;
+        if (mAdView == null || mScreenStateReceiver != null) return;
         
         mScreenStateReceiver = new BroadcastReceiver() {
             public void onReceive(Context context, Intent intent) {
@@ -213,6 +213,8 @@ public class MoPubView extends FrameLayout {
             mContext.unregisterReceiver(mScreenStateReceiver);
         } catch (Exception IllegalArgumentException) {
             Log.d("MoPub", "Failed to unregister screen state broadcast receiver (never registered).");
+        } finally {
+            mScreenStateReceiver = null;
         }
     }
     
@@ -469,5 +471,13 @@ public class MoPubView extends FrameLayout {
         }
         
         if (mAdView != null) mAdView.forceRefresh();
+    }
+    
+    public void onPause() {
+        unregisterScreenStateBroadcastReceiver();
+    }
+    
+    public void onResume() {
+        registerScreenStateBroadcastReceiver();
     }
 }
