@@ -27,6 +27,13 @@
 			<version>${androidVersion}_${androidApiRevision}</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- org.json is provided by the android sdk -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20080701</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
